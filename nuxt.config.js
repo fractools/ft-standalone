@@ -71,17 +71,6 @@ module.exports = {
   router: {
     // middleware: 'auth'
   },
-  serverMiddleware: [
-    // body-parser middleware
-    bodyParser.json(),
-    // session middleware
-    session({
-      secret: 'super-secret-key',
-      resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: 10000000 }
-    }),
-  ],
   /*
   ** Build configuration
   */
