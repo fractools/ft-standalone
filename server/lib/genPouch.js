@@ -6,6 +6,9 @@ const PouchDB = require('pouchdb'),
       // Define PouchDB-Remote-Server and Database
       server = config.remotePouchDB;
 
+if (!server) {
+  console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
+}
 
 // Define general Methods
 async function dbExists(database) {
@@ -33,8 +36,6 @@ async function replicate(database) {
       await db.replicate.from(`http://${server}/${database}`, { live: false, retry: false });
       console.dir(` ######## [ Server Database ] ########  ${database} Replicated`);
       // logger('Database', 'info', `${database} Replicated`);
-    } else {
-      console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
     }
   } catch (err) {
     console.dir(` ######## [ Server Database ] ########  ${database} NOT Replicated!`);

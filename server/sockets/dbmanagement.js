@@ -1,7 +1,7 @@
 const PouchDB = require('pouchdb'),
       pkg = require('../../package'),
       // Import lib
-      logger = require('../lib/logger'),
+      Logger = require('../lib/logger'),
       genPouch = require('../lib/genPouch'),
       // Extract Methods form Lib
       replicate = genPouch.replicate,
@@ -10,6 +10,8 @@ const PouchDB = require('pouchdb'),
       dbExists = genPouch.dbExists,
       // Define PouchDB-Remote-Server and Database
       server = pkg.remotePouchDB;
+
+const logger = new Logger().getInstance();
 
 module.exports = (socket, clients) => {
   // Fetch Documents Count in Database
@@ -65,10 +67,10 @@ module.exports = (socket, clients) => {
       let docs = await fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger(socket, 'Documents', 'info', `Add new Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Add new Data in "${database}"`, client);
     } catch (err) {
       console.log(err);
-      logger(socket, 'Documents', 'error', `Error adding new Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error adding new Data in "${database}": ${err}`, client);
       fn(err, null);
     }
     try {
@@ -95,10 +97,10 @@ module.exports = (socket, clients) => {
       fn(null, response);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger(socket, 'Documents', 'info', `Update Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Update Data in "${database}"`, client);
     } catch (err) {
       console.dir(err);
-      logger(socket, 'Documents', 'error', `Error Updating Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Updating Data in "${database}": ${err}`, client);
       fn(err, null);
     }
     try {
@@ -121,10 +123,10 @@ module.exports = (socket, clients) => {
       fn(null, response);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger(socket, 'Documents', 'info', `Remove Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Remove Data in "${database}"`, client);
     } catch (err) {
       console.dir(err);
-      logger(socket, 'Documents', 'error', `Error Removing Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Removing Data in "${database}": ${err}`, client);
       fn(err, null);
     }
     try {
@@ -165,10 +167,10 @@ module.exports = (socket, clients) => {
       socket.emit(`new-database`, doc);
       socket.broadcast.emit(`documents`, docs, 'databases');
       socket.emit(`documents`, docs, 'databases');
-      logger(socket, 'Documents', 'info', `Add "${data.dbname}" into "Databases"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Add "${data.dbname}" into "Databases"`, client);
     } catch (err) {
       console.log(err);
-      logger(socket, 'Documents', 'error', `Error Putting "${data.dbname}" in "Databases": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Putting "${data.dbname}" in "Databases": ${err}`, client);
       fn(err, null);
     }
     try {

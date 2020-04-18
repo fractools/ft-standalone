@@ -1,7 +1,9 @@
 "use strict";
 const nodemailer = require("nodemailer"),
-      logger = require('../lib/logger'),
+      Logger = require('../lib/logger'),
       config = require('../fractools.config');
+
+const logger = new Logger().getInstance();
 
 async function main(to, subject, text){
   // create reusable transporter object using the default SMTP transport
@@ -41,11 +43,11 @@ module.exports = (socket, clients) => {
     let client = clients.find(client => client.id === socket.id)
     try {
       let res = await main(to, subject, text)
-      logger(socket, 'Nodemailer', 'info', `Send Mail to "${to}"`, client)
+      logger.createLog(socket, 'Nodemailer', 'info', `Send Mail to "${to}"`, client)
       fn(null, res)
     } catch (err) {
       console.log(err);
-      logger(socket, 'Nodemailer', 'error', `Fail to Send Mail to "${to}": ${err}`, client)
+      logger.createLog(socket, 'Nodemailer', 'error', `Fail to Send Mail to "${to}": ${err}`, client)
       fn(err, null)
     }
   })

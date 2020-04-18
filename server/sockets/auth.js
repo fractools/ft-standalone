@@ -1,7 +1,9 @@
 const PouchDB = require('pouchdb'),
-      logger = require('../lib/logger'),
+      Logger = require('../lib/logger'),
       { saltHashPassword, genRandomString } = require('../lib/tokenizer'),
       { authInit, fetch, putDoc } = require('../lib/genPouch');
+
+const logger = new Logger().getInstance();
 
 module.exports = async (socket, io, clients) => {
   console.dir(` ######## [ Server Engine ] ######## Initialize Authentification `)
@@ -47,13 +49,13 @@ module.exports = async (socket, io, clients) => {
             console.log(e);
           }
 
-          logger(socket, 'Authentification', 'info', `Login by "${data.username}"`, client)
+          logger.createLog(socket, 'Authentification', 'info', `Login by "${data.username}"`, client)
           return fn(null, { username: user.username, role: user.role, _id: user._id, token })
         }
-        logger(socket, 'Authentification', 'error', `Wrong password by "${data.username}"`, client)
+        logger.createLog(socket, 'Authentification', 'error', `Wrong password by "${data.username}"`, client)
         return fn({ message: 'Wrong Credentials' }, null)
       }
-      logger(socket, 'Authentification', 'error', `User "${data.username}" not found`, client)
+      logger.createLog(socket, 'Authentification', 'error', `User "${data.username}" not found`, client)
       return fn({ message: 'Wrong Credentials' }, null)
     })
 
@@ -70,12 +72,12 @@ module.exports = async (socket, io, clients) => {
       if (user) {
         const client = { user: user.username, id: socket.id };
         console.dir(` ######## [ Server Engine ] ######## Login via Token by "${user.username}" `)
-        logger(socket, 'Authentification', 'Info', `Login via Token by "${user.username}"`, { user: user.username, id: socket.id })
+        logger.createLog(socket, 'Authentification', 'Info', `Login via Token by "${user.username}"`, { user: user.username, id: socket.id })
         return fn(null, { username: user.username, role: user.role, _id: user._id, token })
       }
       console.dir(' ######## [ Server Engine ] ######## No valid Token');
       fn({ message: 'No valid token' }, null)
-      logger(socket, 'Authentification', 'error', `No valid Token`, { user: 'No User found', id: socket.id })
+      logger.createLog(socket, 'Authentification', 'error', `No valid Token`, { user: 'No User found', id: socket.id })
     })
 
 

@@ -7,13 +7,15 @@ const PouchDB = require('pouchdb'),
         matchPassword,
         genRandomString } = require('../lib/tokenizer'),
       genPouch = require('../lib/genPouch'),
-      logger = require('../lib/logger'),
+      Logger = require('../lib/logger'),
       // Extract Methods form Lib
       replicate = genPouch.replicate,
       fetch = genPouch.fetch,
       docCount = genPouch.docCount,
       // Define PouchDB-Remote-Server and Database
       server = pkg.remotePouchDB;
+
+const logger = new Logger().getInstance();
 
 module.exports = (socket, clients) => {
   // Register new User
@@ -47,11 +49,11 @@ module.exports = (socket, clients) => {
       socket.emit(`documents`, resUser, 'user')
       socket.broadcast.emit(`documents`, resUserData, 'userdata')
       socket.emit(`documents`, resUserData, 'userdata')
-      logger(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client)
+      logger.createLog(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client)
       // Promise Response to Client
       fn(null, 'Registered')
     } catch (err) {
-      logger(socket, 'User Management', 'error', `Fail to Register User "${fullUser.user.username}": ${err}`, client)
+      logger.createLog(socket, 'User Management', 'error', `Fail to Register User "${fullUser.user.username}": ${err}`, client)
       fn(err, null)
       console.log(err);
     }
@@ -77,11 +79,11 @@ module.exports = (socket, clients) => {
       // Broadcast Data to Clients
       socket.broadcast.emit(`documents`, resUser, 'user')
       socket.emit(`documents`, resUser, 'user')
-      logger(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client)
+      logger.createLog(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client)
       // Promise Response to Client
       fn(null, 'Registered')
     } catch (err) {
-      logger(socket, 'User Management', 'error', `No New Password for user "${user.username}": ${err}`, client)
+      logger.createLog(socket, 'User Management', 'error', `No New Password for user "${user.username}": ${err}`, client)
       fn(err, null)
       console.log(err);
     }
@@ -147,10 +149,10 @@ module.exports = (socket, clients) => {
         _rev: doc._rev,
         ...data
       })
-      logger(socket, 'User Management', 'info', `Update user "${user.username}"`, client)
+      logger.createLog(socket, 'User Management', 'info', `Update user "${user.username}"`, client)
       fn(null, true)
     } catch (err) {
-      logger(socket, 'User Management', 'error', `Fail to Update user "${user.username}": ${err}`, client)
+      logger.createLog(socket, 'User Management', 'error', `Fail to Update user "${user.username}": ${err}`, client)
       fn(err, null)
     }
   })
@@ -163,10 +165,10 @@ module.exports = (socket, clients) => {
     try {
       let doc = await userdb.get(id)
       let res = await userdb.remove(doc)
-      logger(socket, 'User Management', 'info', `Remove user "${user.username}"`, client)
+      logger.createLog(socket, 'User Management', 'info', `Remove user "${user.username}"`, client)
       fn(null, true)
     } catch (err) {
-      logger(socket, 'User Management', 'error', `Fail to Remove user "${user.username}": ${err}`, client)
+      logger.createLog(socket, 'User Management', 'error', `Fail to Remove user "${user.username}": ${err}`, client)
       fn(err, null)
     }
   })

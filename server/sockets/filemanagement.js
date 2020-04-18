@@ -1,7 +1,9 @@
 const socketStream = require('socket.io-stream'),
-      logger = require('../lib/logger'),
+      Logger = require('../lib/logger'),
       fs = require('fs')
       disk = require('diskusage');
+
+const logger = new Logger().getInstance();
 
 
 module.exports = (socket, clients) => {
@@ -35,9 +37,9 @@ module.exports = (socket, clients) => {
     };
 
     fs.unlink(`${dest + filename}`, (err) => {
-      if (err) return fn(err, null) && logger(null, 'Fileserver', 'error', `File "${filename}" not deleted in "${dest}"`, client);
+      if (err) return fn(err, null) && logger.createLog(null, 'Fileserver', 'error', `File "${filename}" not deleted in "${dest}"`, client);
       fn(null, 'Deleted')
-      logger(null, 'Fileserver', 'info', `File "${filename}" deleted in ${dest}`, client)
+      logger.createLog(null, 'Fileserver', 'info', `File "${filename}" deleted in ${dest}`, client)
     })
   });
 
