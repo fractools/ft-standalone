@@ -1,6 +1,6 @@
 <template>
   <section>
-    <a-table :columns="columns" :dataSource="reversedLogs" :pagination="pagination" :locale="{ emptyText: 'Keine Einträge' }" :key="$store.state.logs.length" class="darkTable"/>
+    <a-table :columns="columns" :dataSource="reversedLogs" :pagination="pagination" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" class="darkTable"/>
   </section>
 </template>
 

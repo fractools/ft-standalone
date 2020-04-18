@@ -7,7 +7,7 @@
       <a-button type="primary" block @click="postDB()">Speichern</a-button>
     </div>
     <div>
-      <a-table :columns="cols" :dataSource="$store.state.databases" :locale="{ emptyText: 'Keine Einträge' }" bordered>
+      <a-table :columns="cols" :dataSource="$store.state.databases" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" bordered>
         <template slot="name" slot-scope="text, record, index">
           {{ record.dbname }}
         </template>

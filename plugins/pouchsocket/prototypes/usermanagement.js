@@ -5,8 +5,10 @@ Vue.prototype.$addUser = async (fullUser) => {
   console.log(` ######## [ Client Usermanagement ] ########  Register User "${fullUser.user.username}"`);
   return await new Promise((resolve, reject) => {
     socket.emit(`register`, fullUser, (err, result) => {
-      console.log('err', err);
-      if (err) return reject(err);
+      if (err) {
+        return reject(err);
+        console.log('err', err);
+      };
       return resolve(result);
     });
   });

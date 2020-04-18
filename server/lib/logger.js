@@ -10,13 +10,22 @@ class Logger {
   };
 
   async createLog(socket, topic, level, msg, client) {
+
+    let user = 'Node';
+    let socketid = 'Node';
+
+    if (client && client.user && client.id) {
+      user = client.user;
+      socketid = client.id;
+    }
+
     const log = {
       time: moment().format(),
       label: topic,
       level: level,
       message: msg,
-      user: client.user || 'Node',
-      socketid: client.id || 'Node'
+      user: user,
+      socketid: socketid
     };
     try {
       await postDoc('logs', `${log.time}${genRandomString(3)}`, log);

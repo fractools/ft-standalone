@@ -75,9 +75,9 @@ module.exports = async (socket, io, clients) => {
         logger.createLog(socket, 'Authentification', 'Info', `Login via Token by "${user.username}"`, { user: user.username, id: socket.id })
         return fn(null, { username: user.username, role: user.role, _id: user._id, token })
       }
-      console.dir(' ######## [ Server Engine ] ######## No valid Token');
+      // console.dir(' ######## [ Server Engine ] ######## No valid Token');
       fn({ message: 'No valid token' }, null)
-      logger.createLog(socket, 'Authentification', 'error', `No valid Token`, { user: 'No User found', id: socket.id })
+      // logger.createLog(socket, 'Authentification', 'error', `No valid Token`, { user: 'No User found', id: socket.id })
     })
 
 

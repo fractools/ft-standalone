@@ -1,175 +1,132 @@
-// No need to Define the Rest expect Custom Methods
-const PouchDB = require('pouchdb'),
-      pkg = require('../../package'),
-      // Import Lib
-      { saltHashPasswordRegister,
-        saltHashPassword,
-        matchPassword,
-        genRandomString } = require('../lib/tokenizer'),
-      genPouch = require('../lib/genPouch'),
-      Logger = require('../lib/logger'),
-      // Extract Methods form Lib
-      replicate = genPouch.replicate,
-      fetch = genPouch.fetch,
-      docCount = genPouch.docCount,
-      // Define PouchDB-Remote-Server and Database
-      server = pkg.remotePouchDB;
+const Logger = require('../lib/logger');
+const Users = require('../lib/users');
 
 const logger = new Logger().getInstance();
+const users = new Users();
 
 module.exports = (socket, clients) => {
-  // Register new User
+
   socket.on(`register`, async (fullUser, fn) => {
-    console.dir(` ######## [ Server Usermanagement ] ######## Register User "${fullUser.user.username}" `);
-    let client = clients.find(client => client.id === socket.id)
-    // Split Data for two Datasets
-    const user = fullUser.user,
-          userData = fullUser.userData;
-    // Prepare Data
-    let resUser,
-        resUserData;
-    // Prepare Databases
-    const userdb = new PouchDB(`./database/user`),
-          userDatadb = new PouchDB(`./database/userdata`);
-    // Prepare crypted PW
-    const cryptPW = saltHashPasswordRegister(user.password);
-    const cryptedUser = {
-      ...user,
-      password: cryptPW,
+    let client = clients.find(client => client.id === socket.id);
+    try {
+      let userResult = await users.registerUser(fullUser.user);
+      let userDataResult = await users.setupUserData(fullUser.userData);
+      // Log after validation
+      if (userResult.ok && userDataResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client);
+        // Promise Response to Client
+        fn(null, 'Registered');
+      };
+    } catch (err) {
+      logger.createLog(socket, 'User Management', 'error', `Failed to Register User "${fullUser.user.username}": ${err}`, client);
+      fn(err, null);
+      console.log(err);
     };
-    // Push Data into Databases
-    try {
-      resUser = await userdb.put(cryptedUser)
-      resUserData = await userDatadb.put(userData)
-      // Fetch All Data
-      let fetchUser = await fetch('user');
-      let fetchUserData = await fetch('userdata');
-      // Broadcast Data to Clients
-      socket.broadcast.emit(`documents`, resUser, 'user') // TODO Move and Refactor
-      socket.emit(`documents`, resUser, 'user')
-      socket.broadcast.emit(`documents`, resUserData, 'userdata')
-      socket.emit(`documents`, resUserData, 'userdata')
-      logger.createLog(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client)
-      // Promise Response to Client
-      fn(null, 'Registered')
-    } catch (err) {
-      logger.createLog(socket, 'User Management', 'error', `Fail to Register User "${fullUser.user.username}": ${err}`, client)
-      fn(err, null)
-      console.log(err);
-    }
-  })
+  });
 
-  // Set new Password for User
-  socket.on(`newpassword`, async (user, password, fn) => {
-    console.dir(` ######## [ Server Usermanagement ] ######## New Password for user "${user.username}" `);
-    let client = clients.find(client => client.id === socket.id)
-    // Prepare Databases
-    const userdb = new PouchDB(`./database/user`);
-    // Prepare crypted PW
-    const cryptPW = saltHashPasswordRegister(password);
-    const cryptedUser = {
-      ...user,
-      password: cryptPW,
-    }
-    // Push Data into Databases
+  socket.on('updateuser', async (user, fn) => {
+    let client = clients.find(client => client.id === socket.id);
     try {
-      resUser = await userdb.put(cryptedUser)
-      // Fetch All Data
-      let fetchUser = await fetch('user');
-      // Broadcast Data to Clients
-      socket.broadcast.emit(`documents`, resUser, 'user')
-      socket.emit(`documents`, resUser, 'user')
-      logger.createLog(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client)
-      // Promise Response to Client
-      fn(null, 'Registered')
-    } catch (err) {
-      logger.createLog(socket, 'User Management', 'error', `No New Password for user "${user.username}": ${err}`, client)
-      fn(err, null)
-      console.log(err);
-    }
-  })
-
-  // Password Check
-  socket.on(`checkpassword`, async (user, password, fn) => {
-    let client = clients.find(client => client.id === socket.id)
-    // Prepare Databases
-    const userdb = new PouchDB(`./database/user`);
-    try {
-      let data = await userdb.get(user._id)
-      let result = saltHashPassword(password, data.password.salt)
-      await matchPassword(result.passwordHash, user.password.passwordHash)
-      fn(null, true)
-    } catch (err) {
-      fn(err, null);
-    }
-  })
-
-  // Fetch all User
-  socket.on('getalluser', async (fn) => {
-    const alluser = new PouchDB(`./database/user`);
-    // TODO Userdata
-    try {
-      let user = [];
-      let userrow = await alluser.allDocs({
-        include_docs: true,
-        attachments: false
-      });
-      user = userrow.rows.map(row => row.doc);
-      if (!user[0]) {
-        fn('No User exists', null);
+      let userResult = await users.updateUser(user);
+      // Log after validation
+      if (userResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `Update user "${user.username}"`, client);
+        fn(null, true);
       }
-      fn(null, user);
     } catch (err) {
-      console.log(err);
+      logger.createLog(socket, 'User Management', 'error', `Failed to Update user "${user.username}": ${err}`, client);
       fn(err, null);
-    }
-  })
+    };
+  });
 
-  // Fetch single User
-  socket.on('getuser', async (id, fn) => {
-    const userdb = new PouchDB(`./database/user`)
-    // TODO Userdata
+  socket.on('updateuserdata', async (userData, fn) => {
+    let client = clients.find(client => client.id === socket.id);
     try {
-      let res = await userdb.get(id)
-      fn(null, res)
+      let userDataResult = await users.updateUserData(userData);
+      // Log after validation
+      if (userDataResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `Update userdata for "${userData._id}"`, client);
+        fn(null, true);
+      }
     } catch (err) {
-      fn(err, null)
-    }
-  })
+      logger.createLog(socket, 'User Management', 'error', `Failed to Update userdata for "${userData._id}": ${err}`, client);
+      fn(err, null);
+    };
+  });
 
-  // Update single User
-  socket.on('updateuser', async (data, fn) => {
-    let client = clients.find(client => client.id === socket.id)
-    const userdb = new PouchDB(`./database/user`)
-    // TODO Userdata
-    try {
-      let doc = await userdb.get(data._id)
-      let res = await userdb.put({
-        _id: data._id,
-        _rev: doc._rev,
-        ...data
-      })
-      logger.createLog(socket, 'User Management', 'info', `Update user "${user.username}"`, client)
-      fn(null, true)
-    } catch (err) {
-      logger.createLog(socket, 'User Management', 'error', `Fail to Update user "${user.username}": ${err}`, client)
-      fn(err, null)
-    }
-  })
-
-  // Remove single User
   socket.on('removeuser', async (id, fn) => {
     let client = clients.find(client => client.id === socket.id)
-    const userdb = new PouchDB(`./database/user`)
-    // TODO Userdata
     try {
-      let doc = await userdb.get(id)
-      let res = await userdb.remove(doc)
-      logger.createLog(socket, 'User Management', 'info', `Remove user "${user.username}"`, client)
-      fn(null, true)
+      let userResult = await users.removeUser(id);
+      if (userResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `Remove user "${id}"`, client);
+        fn(null, true);
+      }
     } catch (err) {
-      logger.createLog(socket, 'User Management', 'error', `Fail to Remove user "${user.username}": ${err}`, client)
-      fn(err, null)
-    }
-  })
+      logger.createLog(socket, 'User Management', 'error', `Failed to Remove user "${id}": ${err}`, client);
+      fn(err, null);
+    };
+  });
+
+  socket.on('removeuserdata', async (id, fn) => {
+    let client = clients.find(client => client.id === socket.id)
+    try {
+      let userDataResult = await users.removeUserData(id);
+      if (userDataResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `Remove userdata for "${id}"`, client);
+        fn(null, true);
+      }
+    } catch (err) {
+      logger.createLog(socket, 'User Management', 'error', `Failed to Remove userdata for "${id}": ${err}`, client);
+      fn(err, null);
+    };
+  });
+
+  socket.on(`newpassword`, async (user, password, fn) => {
+    let client = clients.find(client => client.id === socket.id)
+    try {
+      let userResult = await users.setNewPassword(user, password);
+      // Log after validation
+      if (userResult.ok) {
+        logger.createLog(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client);
+        // Promise Response to Client
+        fn(null, 'Registered');
+      };
+    } catch (err) {
+      logger.createLog(socket, 'User Management', 'error', `No New Password for user "${user.username}": ${err}`, client);
+      fn(err, null);
+      console.log(err);
+    };
+  });
+
+  socket.on(`checkpassword`, async (user, password, fn) => {
+    let client = clients.find(client => client.id === socket.id);
+    try {
+      const result = await users.checkPassword(user, password);
+      fn(null, true);
+    } catch (err) {
+      fn(err, null);
+    };
+  });
+
+  socket.on('getalluser', async (fn) => {
+    try {
+      const userList = await users.listAllUsers();
+      // Check for initial user
+      !userList[0] ? fn('No User exists', null) : fn(null, userList);
+    } catch (err) {
+      console.log(err);
+      fn(err, null);
+    };
+  });
+
+  socket.on('getuser', async (id, fn) => {
+    try {
+      const user = await users.getUser(id);
+      fn(null, user);
+    } catch (err) {
+      fn(err, null);
+    };
+  });
+
 };

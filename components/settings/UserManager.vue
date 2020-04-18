@@ -95,7 +95,7 @@
         <a-divider class="dividerUserList" orientation="left"><h2>Benutzer Liste</h2></a-divider>
 
         <!-- new Table -->
-        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'Keine Einträge' }" bordered>
+        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" bordered>
           <template
             v-for="col in
             [
