@@ -8,7 +8,7 @@ module.exports = (app, io) => {
   console.dir(' ######## [ Server Engine ] ######## Initialize Sockets ');
 
   // Connected Clients List
-  let clients = []
+  let clients = [];
 
   // Socket for Client to connect with Node
   io.on('connection', (socket) => { // TODO Handshake
@@ -26,7 +26,7 @@ module.exports = (app, io) => {
       // logger.createLog('Socket', 'info', `Client "${socket.id}" disconnected`)
       let recentClients = clients.filter(c => c.id != socket.id);
       clients = recentClients;
-      socket.broadcast.emit(`new-client`, clients)
+      socket.broadcast.emit(`new-client`, clients);
     });
 
     // Filemanagement

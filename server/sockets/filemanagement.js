@@ -38,9 +38,9 @@ module.exports = (socket, clients) => {
 
     fs.unlink(`${dest + filename}`, (err) => {
       if (err) return fn(err, null) && logger.createLog(null, 'Fileserver', 'error', `File "${filename}" not deleted in "${dest}"`, client);
-      fn(null, 'Deleted')
-      logger.createLog(null, 'Fileserver', 'info', `File "${filename}" deleted in ${dest}`, client)
-    })
+      fn(null, 'Deleted');
+      logger.createLog(null, 'Fileserver', 'info', `File "${filename}" deleted in ${dest}`, client);
+    });
   });
 
   // Check Diskspace
@@ -49,14 +49,14 @@ module.exports = (socket, clients) => {
       if (err) {
         fn(err, null);
       } else {
-        function toGB(x) { return (x / (1024 * 1024 * 1024)).toFixed(1); }
+        function toGB(x) { return (x / (1024 * 1024 * 1024)).toFixed(1); };
         let percentAvailable = ((info.available / info.total) * 100);
         fn(null, {
           freeGB: toGB(info.available),
           freePercent: percentAvailable,
           total: toGB(info.total)
         });
-      }
+      };
     });
   });
 };

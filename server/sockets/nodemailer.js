@@ -10,19 +10,19 @@ async function main(to, subject, text){
   let transporter = nodemailer.createTransport({
     host: config.nodemailer.host,
     port: 25,
-    secure: false,                          // true for 465, false for other ports
+    secure: false,                            // true for 465, false for other ports
     tls: {
       rejectUnauthorized: false
     },
     auth: {
-      user: config.nodemailer.user,                             // generated ethereal user
-      pass: config.nodemailer.password                              // generated ethereal password
+      user: config.nodemailer.user,           // generated ethereal user
+      pass: config.nodemailer.password        // generated ethereal password
     }
   });
   try {
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '',  // sender address
+      from: '',                               // sender address
       to: to,                                 // list of receivers
       subject: subject,                       // Subject line
       text: text,                             // plain text body
@@ -30,7 +30,7 @@ async function main(to, subject, text){
     });
     let res = "Message ID: " + info.messageId;
     console.log(res);
-    return res
+    return res;
   } catch (err) {
     throw new Error(err);
   }
@@ -40,15 +40,15 @@ module.exports = (socket, clients) => {
   // Send E-Mail via Node
   socket.on(`send-mail`, async (to, subject, text, fn) => {
     console.log(` ######## [ Server Mailer ] ######## Send Mail to "${to}" `);
-    let client = clients.find(client => client.id === socket.id)
+    let client = clients.find(client => client.id === socket.id);
     try {
-      let res = await main(to, subject, text)
-      logger.createLog(socket, 'Nodemailer', 'info', `Send Mail to "${to}"`, client)
-      fn(null, res)
+      let res = await main(to, subject, text);
+      logger.createLog(socket, 'Nodemailer', 'info', `Send Mail to "${to}"`, client);
+      fn(null, res);
     } catch (err) {
       console.log(err);
-      logger.createLog(socket, 'Nodemailer', 'error', `Fail to Send Mail to "${to}": ${err}`, client)
-      fn(err, null)
+      logger.createLog(socket, 'Nodemailer', 'error', `Fail to Send Mail to "${to}": ${err}`, client);
+      fn(err, null);
     }
   })
 };

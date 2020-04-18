@@ -11,10 +11,8 @@ module.exports = (socket, clients) => {
     try {
       let userResult = await users.registerUser(fullUser.user);
       let userDataResult = await users.setupUserData(fullUser.userData);
-      // Log after validation
       if (userResult.ok && userDataResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client);
-        // Promise Response to Client
         fn(null, 'Registered');
       };
     } catch (err) {
@@ -28,11 +26,10 @@ module.exports = (socket, clients) => {
     let client = clients.find(client => client.id === socket.id);
     try {
       let userResult = await users.updateUser(user);
-      // Log after validation
       if (userResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `Update user "${user.username}"`, client);
         fn(null, true);
-      }
+      };
     } catch (err) {
       logger.createLog(socket, 'User Management', 'error', `Failed to Update user "${user.username}": ${err}`, client);
       fn(err, null);
@@ -43,11 +40,10 @@ module.exports = (socket, clients) => {
     let client = clients.find(client => client.id === socket.id);
     try {
       let userDataResult = await users.updateUserData(userData);
-      // Log after validation
       if (userDataResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `Update userdata for "${userData._id}"`, client);
         fn(null, true);
-      }
+      };
     } catch (err) {
       logger.createLog(socket, 'User Management', 'error', `Failed to Update userdata for "${userData._id}": ${err}`, client);
       fn(err, null);
@@ -61,7 +57,7 @@ module.exports = (socket, clients) => {
       if (userResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `Remove user "${id}"`, client);
         fn(null, true);
-      }
+      };
     } catch (err) {
       logger.createLog(socket, 'User Management', 'error', `Failed to Remove user "${id}": ${err}`, client);
       fn(err, null);
@@ -75,7 +71,7 @@ module.exports = (socket, clients) => {
       if (userDataResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `Remove userdata for "${id}"`, client);
         fn(null, true);
-      }
+      };
     } catch (err) {
       logger.createLog(socket, 'User Management', 'error', `Failed to Remove userdata for "${id}": ${err}`, client);
       fn(err, null);
@@ -86,10 +82,8 @@ module.exports = (socket, clients) => {
     let client = clients.find(client => client.id === socket.id)
     try {
       let userResult = await users.setNewPassword(user, password);
-      // Log after validation
       if (userResult.ok) {
         logger.createLog(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client);
-        // Promise Response to Client
         fn(null, 'Registered');
       };
     } catch (err) {
@@ -100,7 +94,6 @@ module.exports = (socket, clients) => {
   });
 
   socket.on(`checkpassword`, async (user, password, fn) => {
-    let client = clients.find(client => client.id === socket.id);
     try {
       const result = await users.checkPassword(user, password);
       fn(null, true);
@@ -112,7 +105,6 @@ module.exports = (socket, clients) => {
   socket.on('getalluser', async (fn) => {
     try {
       const userList = await users.listAllUsers();
-      // Check for initial user
       !userList[0] ? fn('No User exists', null) : fn(null, userList);
     } catch (err) {
       console.log(err);

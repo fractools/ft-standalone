@@ -39,7 +39,7 @@ class Users {
     let resUserData = await userDatadb.put(userData);
     let fetchUserData = await fetch('userdata');
     return resUserData;
-  }
+  };
 
   async updateUserData(userData) {
     let userDataInDB = await userDatadb.get(userData._id);
@@ -94,6 +94,6 @@ class Users {
     let user = await userdb.get(id);
     return user;
   };
-}
+};
 
 module.exports = Users;

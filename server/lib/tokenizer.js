@@ -35,7 +35,7 @@ async function matchPassword(db, delivered) {
       return resolve('Password matches');
     } else {
       return reject('Old password does not match');
-    }
+    };
   });
 };
 

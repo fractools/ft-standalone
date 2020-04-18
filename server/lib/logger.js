@@ -5,20 +5,15 @@ const moment = require('moment'),
 moment.locale('de');
 
 class Logger {
-  constructor() {
-
-  };
+  constructor(){};
 
   async createLog(socket, topic, level, msg, client) {
-
     let user = 'Node';
     let socketid = 'Node';
-
     if (client && client.user && client.id) {
       user = client.user;
       socketid = client.id;
     }
-
     const log = {
       time: moment().format(),
       label: topic,

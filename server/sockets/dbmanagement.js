@@ -21,7 +21,7 @@ module.exports = (socket, clients) => {
       fn(null, data);
     } catch (err) {
       fn(err, null);
-    }
+    };
   });
 
   socket.on(`dbexists`, async (database, fn) => {
@@ -31,7 +31,7 @@ module.exports = (socket, clients) => {
     } catch (err) {
       console.log('err', err);
       fn(err, null);
-    }
+    };
   });
 
   // Fetch Documents to/from Remote
@@ -42,12 +42,12 @@ module.exports = (socket, clients) => {
       fn(null, docs);
     } catch (err) {
       fn(err, null);
-    }
+    };
     try {
       await replicate(database);
     } catch (err) {
       console.log(err);
-    }
+    };
   });
 
   // Send and Broadcast new Document
@@ -72,12 +72,12 @@ module.exports = (socket, clients) => {
       console.log(err);
       logger.createLog(socket, 'Documents', 'error', `Error adding new Data in "${database}": ${err}`, client);
       fn(err, null);
-    }
+    };
     try {
       await replicate(database);
     } catch (err) {
       console.log(err);
-    }
+    };
   });
 
   // Send and Broadcast updated Document
@@ -102,12 +102,12 @@ module.exports = (socket, clients) => {
       console.dir(err);
       logger.createLog(socket, 'Documents', 'error', `Error Updating Data in "${database}": ${err}`, client);
       fn(err, null);
-    }
+    };
     try {
       await replicate(database);
     } catch (err) {
       console.log(err);
-    }
+    };
   });
 
   // Remove and Broadcast removed Document
@@ -128,12 +128,12 @@ module.exports = (socket, clients) => {
       console.dir(err);
       logger.createLog(socket, 'Documents', 'error', `Error Removing Data in "${database}": ${err}`, client);
       fn(err, null);
-    }
+    };
     try {
       await replicate(database);
     } catch (err) {
       console.log(err);
-    }
+    };
   });
 
   // Get Single Document
@@ -146,7 +146,7 @@ module.exports = (socket, clients) => {
     } catch (err) {
       console.dir(err);
       fn(err, null);
-    }
+    };
   });
 
   // Send and Broadcast new Document
@@ -172,12 +172,12 @@ module.exports = (socket, clients) => {
       console.log(err);
       logger.createLog(socket, 'Documents', 'error', `Error Putting "${data.dbname}" in "Databases": ${err}`, client);
       fn(err, null);
-    }
+    };
     try {
       await replicate('databases');
     } catch (err) {
       console.log(err);
-    }
+    };
   });
 
   // Replicate Documents to/from Remote
@@ -196,4 +196,4 @@ module.exports = (socket, clients) => {
     let db2 = new PouchDB(`./database/${database2}`);
     await db2.replicate.from(`http://${server2}/${database2}`);
   });
-}
+};
