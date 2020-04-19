@@ -8,14 +8,13 @@ const logger = new Logger().getInstance();
 module.exports = async (socket, io, clients) => {
 
   try {
-    // User Authentification
+    // Fetch and Await User-Database for Authentification
     authInit();
-
   } catch (e) {
-    console.error('FEHLER', e);
+    console.error('ERROR: ', e);
 
   } finally {
-
+    
     socket.on(`login`, async (data, fn) => {
       console.dir(` ######## [ Server Engine ] ######## "${data.username}" logs in `);
       let client = { user: data.username, id: socket.id };
@@ -31,7 +30,7 @@ module.exports = async (socket, io, clients) => {
       // Get Single User out of Users List via matching Credencials
       let user = users.find(u => u.username === data.username);
 
-      // Try Authentification for found User
+      // Try Authentification
       if (user) {
         // Crypto
         let result = saltHashPassword(data.password, user.password.salt);
@@ -39,7 +38,7 @@ module.exports = async (socket, io, clients) => {
 
           // Generate Token for Autologin via Cookie
           let token = genRandomString(16);
-          // Add Token into User
+          // Add Token to User
           user = { ...user, token };
 
           try {

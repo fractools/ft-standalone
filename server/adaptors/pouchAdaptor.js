@@ -1,29 +1,47 @@
-const PouchDB = require('../adaptors/pouchAdaptor');
+let PouchDB = require('pouchdb');
 const pkg = require('../../package');
 
-class PouchAdapter {
-  constructor() {
-    this.userList = {
+class PouchAdaptor {
+  constructor(db) {
+    this.db = db.substring(db.lastIndexOf('/') + 1);
+    this.user = {
       rows: [
-          {
-            id: 'testUser',
-            key: 'testUser',
-            value: { _rev: '1-xyz' },
-            doc: {
-              username: 'testUser',
-              password: { salt: 'xyz', passwordHash: 'xyz' },
-              role: 'User',
-              token: '123',
-              _id: 'testUser',
-              _rev: '1-xyz'
+        {
+          id: 'testUser',
+          key: 'testUser',
+          value: { _rev: '1-xyz' },
+          doc: {
+            username: 'testUser',
+            password: { salt: 'xyz', passwordHash: 'xyz' },
+            role: 'User',
+            token: '123',
+            _id: 'testUser',
+            _rev: '1-xyz'
           }
         }
       ]
     };
-  }
+    this.userdata = {
+      rows: [
+        {
+          id: 'testUser',
+          key: 'testUser',
+          value: { _rev: '1-xyz' },
+          doc: {
+            displayname: 'Test',
+            vorname: 'Test',
+            nachname: 'User',
+            email: 'testmail@test.de',
+            _id: 'testUser',
+            _rev: '1-xyz'
+          }
+        }
+      ]
+    };
+  };
 
   allDocs() {
-    return this.userList;
+    return this[this.db];
   };
 
   get(id) {
@@ -32,20 +50,38 @@ class PouchAdapter {
     return allUsers.filter((user) => user._id === id)[0];
   };
 
-  put(user) {
-    let newUser = {
-      id: user._id,
-      key: user._id,
-      value: { _rev: user._rev },
-      doc: user
+  put(data) {
+    let indexToRemove = this[this.db].rows.map(e => e.id).indexOf(data._id);
+    if (!data._rev) {
+      data._rev = '1-xyz';
+    } else {
+      let revNum = parseInt(data._rev.split('-')[0]) + 1;
+      let revKey = data._rev.split('-')[1];
+      let revNew = revNum + '-' + revKey;
+      data._rev = revNew;
     };
-    this.userList.rows.push(newUser);
+    let newUser = {
+      id: data._id,
+      key: data._id,
+      value: { _rev: data._rev },
+      doc: data
+    };
+    if (!indexToRemove) {
+      this[this.db].rows.splice(0, 1, newUser);
+    } else {
+      this[this.db].rows.push(newUser);
+    }
+  };
+
+  remove(id) {
+    let indexToRemove = this[this.db].rows.map(e => e.id).indexOf(id.username);
+    this[this.db].rows.splice(0, 1);
   };
 };
 
-let pouch = PouchDB;
+
 if (pkg.testing) {
-  pouch = PouchAdapter;
+  PouchDB = PouchAdaptor;
 }
 
-module.exports = pouch;
+module.exports = PouchDB;

@@ -1,17 +1,12 @@
-// No need to Define the Rest expect Custom Methods
 const PouchDB = require('../adaptors/pouchAdaptor'),
       config = require('../fractools.config'),
       pkg = require('../../package'),
-      // logger = require('./logger'),
-
-      // Define PouchDB-Remote-Server and Database
       server = config.remotePouchDB;
 
 if (!server && !pkg.testing) {
   console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
 };
 
-// Define general Methods
 async function dbExists(database) {
   let data;
   try {
@@ -36,11 +31,9 @@ async function replicate(database) {
       await db.replicate.to(`http://${server}/${database}`, { live: false, retry: false });
       await db.replicate.from(`http://${server}/${database}`, { live: false, retry: false });
       console.dir(` ######## [ Server Database ] ########  ${database} Replicated`);
-      // logger('Database', 'info', `${database} Replicated`);
     };
   } catch (err) {
     console.dir(` ######## [ Server Database ] ########  ${database} NOT Replicated!`);
-    // logger('Database', 'error', `${database} NOT Replicated`)
     throw new Error(err.message);
   };
 };
@@ -54,9 +47,7 @@ async function fetch(database) {
       attachments: false
     });
     data = alldocs.rows.map(row => row.doc);
-    // logger('Database', 'info', `${database} Fetched`)
   } catch (err) {
-    // logger('Database', 'error', `${database} NOT Fetched: ${err}`)
     throw new Error(err);
   };
   return data;
@@ -96,9 +87,8 @@ async function docCount(database) {
 
   try {
     try {
-      remoteDocCount= await db.info();
+      remoteDocCount = await db.info();
     } catch (err) {
-      remoteDocCount = await db.info(); // TODO Why is this like that?
       console.log(err.message);
     } finally {
       localDocCount = await db.info();
@@ -134,10 +124,8 @@ async function dbInit() {
 
 async function authInit() {
   try {
-    // logger('Authentification', 'info', `Initialize Authentification`)
     await replicate('user');
   } catch (e) {
-    // logger('Authentification', 'error', `Error to Initialize Authentification: ${e}`)
     console.error(e);
   } finally {
     await fetch('user');
