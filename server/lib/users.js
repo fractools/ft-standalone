@@ -1,4 +1,4 @@
-const PouchDB = require('pouchdb');
+const PouchDB = require('../adapters/pouchAdapter');
 const Logger = require('./logger');
 
 const pkg = require('../../package');
@@ -85,7 +85,7 @@ class Users {
 
   async listAllUsers() {
     let userList = [];
-    let userrow = await userdb.allDocs({ include_docs: true,   attachments: false });
+    let userrow = await userdb.allDocs({ include_docs: true, attachments: false });
     userList = userrow.rows.map(row => row.doc);
     return userList;
   };

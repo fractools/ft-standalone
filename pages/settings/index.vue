@@ -33,7 +33,7 @@
         </section>
       </a-tab-pane>
       <img src="~/assets/pictures/layout/logo.png"
-           style="width:12em;cursor:pointer;margin-top:0.75em;margin-right:0.5em;"
+           style="width:12em;cursor:pointer;margin-right:0.5em;"
            slot="tabBarExtraContent"
            @click="$router.push('/')">
     </a-tabs>

@@ -1,12 +1,13 @@
 // No need to Define the Rest expect Custom Methods
-const PouchDB = require('pouchdb'),
+const PouchDB = require('../adapters/pouchAdapter'),
       config = require('../fractools.config'),
+      pkg = require('../../package'),
       // logger = require('./logger'),
 
       // Define PouchDB-Remote-Server and Database
       server = config.remotePouchDB;
 
-if (!server) {
+if (!server && !pkg.testing) {
   console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
 };
 

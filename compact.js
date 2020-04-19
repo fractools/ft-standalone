@@ -8,7 +8,7 @@ const http = require('http'),
 const PORT = process.env.PORT || pkg.config.nuxt.port;
 const HOST = process.env.baseurl || pkg.config.nuxt.host;
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production';
 
 // Define Root Path
 global.__basedir = __dirname;
@@ -35,7 +35,7 @@ nuxtReady();
 
 // Enable live build & reloading on dev
 if (nuxt.options.dev) {
-  new Builder(nuxt).build()
+  new Builder(nuxt).build();
 };
 
 app.use(nuxt.render);
@@ -46,4 +46,4 @@ require('./server/sockets')(app, io);
 // Init Server
 server.listen(PORT, HOST);
 
-console.dir(' ######## [ Server Engine ] ######## Server listening on: http://' + HOST + ':' + PORT)
+console.dir(' ######## [ Server Engine ] ######## Server listening on: http://' + HOST + ':' + PORT);

@@ -1,4 +1,4 @@
-const PouchDB = require('pouchdb'),
+const PouchDB = require('../adapters/pouchAdapter'),
       Logger = require('../lib/logger'),
       { saltHashPassword, genRandomString } = require('../lib/tokenizer'),
       { authInit, fetch, putDoc } = require('../lib/genPouch');
@@ -6,7 +6,6 @@ const PouchDB = require('pouchdb'),
 const logger = new Logger().getInstance();
 
 module.exports = async (socket, io, clients) => {
-  console.dir(` ######## [ Server Engine ] ######## Initialize Authentification `);
 
   try {
     // User Authentification

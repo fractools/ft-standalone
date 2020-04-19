@@ -7,7 +7,6 @@ const logger = new Logger().getInstance();
 
 
 module.exports = (socket, clients) => {
-  console.dir(` ######## [ Server Engine ] ######## Initialize Fileserver `);
 
   // Upload File
   socketStream(socket).on('fileupload', (stream, data) => {
@@ -59,4 +58,6 @@ module.exports = (socket, clients) => {
       };
     });
   });
+
+  console.dir(` ######## [ Server Engine ] ######## Fileserver Initialized `);
 };
