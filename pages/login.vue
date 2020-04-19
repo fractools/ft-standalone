@@ -5,11 +5,11 @@
         <img id="pageLoginLogo" src="@/assets/pictures/layout/logo.png"/>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Benutzername" v-model="username" type="text" v-autofocus @keyup.enter.native="login"/>
+          <a-input class="inputLogin" placeholder="Username" v-model="username" type="text" v-autofocus @keyup.enter.native="login"/>
         </a-form-item>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Passwort" v-model="password" type="password" @keyup.enter.native="login"/>
+          <a-input class="inputLogin" placeholder="Password" v-model="password" type="password" @keyup.enter.native="login"/>
         </a-form-item>
 
         <a-form-item>
@@ -20,26 +20,26 @@
       <a-form v-else id="authInput" @submit.prevent="login">
         <img id="pageLoginLogo" src="@/assets/pictures/layout/logo.png"/>
 
-        <p style="text-align:center;color:white;">Den ersten Nutzer registrieren:</p>
+        <p style="text-align:center;color:white;">Register first User:</p>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Benutzername" v-model="username" type="text" v-autofocus @keyup.enter.native="register"/>
+          <a-input class="inputLogin" placeholder="Username" v-model="username" type="text" v-autofocus @keyup.enter.native="register"/>
         </a-form-item>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Passwort" v-model="password" type="password" @keyup.enter.native="register"/>
+          <a-input class="inputLogin" placeholder="Password" v-model="password" type="password" @keyup.enter.native="register"/>
         </a-form-item>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Passwort wiederholen" v-model="password2" type="password" @keyup.enter.native="register"/>
+          <a-input class="inputLogin" placeholder="Password wiederholen" v-model="password2" type="password" @keyup.enter.native="register"/>
         </a-form-item>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Name" v-model="vorname" type="text" @keyup.enter.native="register"/>
+          <a-input class="inputLogin" placeholder="Name" v-model="surname" type="text" @keyup.enter.native="register"/>
         </a-form-item>
 
         <a-form-item>
-          <a-input class="inputLogin" placeholder="Nachname" v-model="nachname" type="text" @keyup.enter.native="register"/>
+          <a-input class="inputLogin" placeholder="Lastname" v-model="lastname" type="text" @keyup.enter.native="register"/>
         </a-form-item>
 
         <a-form-item>
@@ -47,7 +47,7 @@
         </a-form-item>
 
         <a-form-item>
-          <a-button id="loginButton" type="primary" block @click="register">Registrieren</a-button>
+          <a-button id="loginButton" type="primary" block @click="register">Register</a-button>
         </a-form-item>
 
       </a-form>
@@ -56,9 +56,7 @@
 </template>
 
 <script>
-import socket from '~/plugins/socket.io.js' // TODO Prototype
 import { mapState } from 'vuex'
-
 
 export default {
   layout: 'login',
@@ -67,8 +65,8 @@ export default {
       username: '',
       password: '',
       password2: '',
-      vorname: '',
-      nachname: '',
+      surname: '',
+      lastname: '',
       email: ''
     }
   },
@@ -79,11 +77,11 @@ export default {
           username: this.username.toLowerCase(),
           password: this.password
         });
-        await this.$router.push('/settings')
-        socket.emit('client', { id: socket.id, user: this.$store.state.authUser.username })
+        await this.$router.push('/');
+        this.$pushClient(this.$store.state.authUser.username);
       } catch (e) {
         this.$notification['error']({
-          message: 'Fehler beim Login',
+          message: 'Login Error',
           description: `${e.message}`
         })
       }
@@ -92,37 +90,34 @@ export default {
       if (this.password !== this.password2) {
         this.$notification['error']({
           message: 'Registering Error',
-          description: `Both Passwords doesnt match}`
+          description: `Passwords do not match`
         })
       }
 
-      if (!this.username || !this.password || !this.vorname || !this.nachname || !this.email) {
+      if (!this.username || !this.password || !this.surname || !this.lastname || !this.email) {
         this.$notification['error']({
           message: 'Registering Error',
           description: `Please fill all fields`
         })
       }
 
-      // User Credentials
       const user = {
         _id: this.username.toLowerCase(),
         username: this.username.toLowerCase(),
         password: this.password,
         role: 'Administrator'
       }
-      // UserData
       const userData = {
         _id: this.username.toLowerCase(),
-        displayname: this.vorname,  // TODO Translate
-        vorname: this.vorname,
-        nachname: this.nachname,
+        displayname: this.surname,
+        surname: this.surname,
+        lastname: this.lastname,
         email: this.email,
         phone: '',
-        profileImage: 'http://genratio.de/wp-content/uploads/2019/04/DefaultAvatarZero700px.png',
+        profileImage: '~/assets/pictures/user/DefaultAvatar700px.png',
         kontaktFavoriten: [],
         kontaktListen: []
       }
-      // Merge User Informations
       const fullUser = {
         user,
         userData
@@ -133,7 +128,7 @@ export default {
         this.$store.commit('INIT_USER', false);
       } catch (e) {
         this.$notification['error']({
-          message: 'Fehler beim Login',
+          message: 'Login Error',
           description: `${e.message}`
         })
       }

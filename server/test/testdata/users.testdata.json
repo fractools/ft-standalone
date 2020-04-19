@@ -1,0 +1,78 @@
+{
+  "userList": [
+    {
+      "username": "testUser",
+      "password": { "salt": "xyz", "passwordHash": "xyz" },
+      "role": "User",
+      "token": "123",
+      "_id": "testUser",
+      "_rev": "1-xyz"
+    }
+  ],
+  "userDataList": [
+    {
+      "displayname": "Test",
+      "surname": "Test",
+      "lastname": "User",
+      "email": "testmail@test.de",
+      "_id": "testUser",
+      "_rev": "1-xyz"
+    }
+  ],
+  "testUsers": [
+    {
+      "_id": "Dennis",
+      "username": "Dennis",
+      "password": "test1",
+      "role": "User"
+    },
+    {
+      "_id": "Marcy",
+      "username": "Marcy",
+      "password": "test2",
+      "role": "User"
+    },
+    {
+      "_id": "Melanie",
+      "username": "Melanie",
+      "password": "test3",
+      "role": "User"
+    },
+    {
+      "_id": "Pete",
+      "username": "Pete",
+      "password": "test4",
+      "role": "User"
+    }
+  ],
+  "testUserData": [
+    {
+      "_id": "Dennis",
+      "displayname": "Dennis",
+      "surname": "El Denne",
+      "lastname": "User",
+      "email": "testmail@test.de"
+    },
+    {
+      "_id": "Marcy",
+      "displayname": "Marcy",
+      "surname": "El Mary",
+      "lastname": "User",
+      "email": "testmail@test.de"
+    },
+    {
+      "_id": "Melanie",
+      "displayname": "Melanie",
+      "surname": "El Mel",
+      "lastname": "User",
+      "email": "testmail@test.de"
+    },
+    {
+      "_id": "Pete",
+      "displayname": "Pete",
+      "surname": "El Pet",
+      "lastname": "User",
+      "email": "testmail@test.de"
+    }
+  ]
+}

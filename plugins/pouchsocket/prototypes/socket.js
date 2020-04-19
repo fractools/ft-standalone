@@ -25,15 +25,23 @@ Vue.prototype.$socket = function (database, documents) {
 // Look for other Clients conected to Node
 Vue.prototype.$getClients = async function () {
   console.log(` ######## [ Client Socket ] ########  Fetch Clients`);
-  let clients = await new Promise(resolve => socket.emit('clients', resolve))
+  let clients = await new Promise(resolve => socket.emit('clients', resolve));
   return clients;
 }
+
+// Register own client
+Vue.prototype.$pushClient = async function (username) {
+  console.log(` ######## [ Client Socket ] ########  Push Client`);
+  let client = { id: socket.id, user: username };
+  socket.emit('client', client);
+}
+
 
 // Listen to Client Network
 Vue.prototype.$clients = function (clients) {
   socket.on(`new-client`, (client) => {
     console.log(` ######## [ Client Socket ] ########  New Client detected ${client}`);
-    this.clients.push(client)
+    this.clients.push(client);
   })
   socket.on(`disconnected-client`, (client) => {
     console.log(` ######## [ Client Socket ] ########  Client ${client} disconnected`);

@@ -4,39 +4,8 @@ const pkg = require('../../package');
 class PouchAdaptor {
   constructor(db) {
     this.db = db.substring(db.lastIndexOf('/') + 1);
-    this.user = {
-      rows: [
-        {
-          id: 'testUser',
-          key: 'testUser',
-          value: { _rev: '1-xyz' },
-          doc: {
-            username: 'testUser',
-            password: { salt: 'xyz', passwordHash: 'xyz' },
-            role: 'User',
-            token: '123',
-            _id: 'testUser',
-            _rev: '1-xyz'
-          }
-        }
-      ]
-    };
-    this.userdata = {
-      rows: [
-        {
-          id: 'testUser',
-          key: 'testUser',
-          value: { _rev: '1-xyz' },
-          doc: {
-            displayname: 'Test',
-            vorname: 'Test',
-            nachname: 'User',
-            email: 'testmail@test.de',
-            _id: 'testUser',
-            _rev: '1-xyz'
-          }
-        }
-      ]
+    this[this.db] = {
+      rows: []
     };
   };
 
@@ -52,6 +21,7 @@ class PouchAdaptor {
 
   put(data) {
     let indexToRemove = this[this.db].rows.map(e => e.id).indexOf(data._id);
+
     if (!data._rev) {
       data._rev = '1-xyz';
     } else {
@@ -60,17 +30,23 @@ class PouchAdaptor {
       let revNew = revNum + '-' + revKey;
       data._rev = revNew;
     };
+
+    if (!data._id) {
+      data._id = '1-abc';
+    };
+
     let newUser = {
       id: data._id,
       key: data._id,
       value: { _rev: data._rev },
       doc: data
     };
+
     if (!indexToRemove) {
       this[this.db].rows.splice(0, 1, newUser);
     } else {
       this[this.db].rows.push(newUser);
-    }
+    };
   };
 
   remove(id) {
@@ -79,9 +55,8 @@ class PouchAdaptor {
   };
 };
 
-
 if (pkg.testing) {
   PouchDB = PouchAdaptor;
-}
+};
 
 module.exports = PouchDB;

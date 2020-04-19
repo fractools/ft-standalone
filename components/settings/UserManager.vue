@@ -9,7 +9,7 @@
           <div class="genData">
             <a-divider orientation="left"><h3>Login</h3></a-divider>
             <a-input
-              placeholder="Benutzername"
+              placeholder="Username"
               v-model="newUser.username"
               class="withGap">
             <a-icon
@@ -18,7 +18,7 @@
             </a-input>
 
             <a-input
-              placeholder="Passwort"
+              placeholder="Password"
               v-model="newUser.password"
               class="withGap">
               <a-icon
@@ -33,13 +33,13 @@
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Vorname"
-            v-model="newUserData.vorname"/>
+            placeholder="Surname"
+            v-model="newUserData.surname"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Nachname"
-            v-model="newUserData.nachname"/>
+            placeholder="Lastname"
+            v-model="newUserData.lastname"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
@@ -256,9 +256,9 @@ export default {
         // UserData
         const userData = {
           _id: this.newUser.username.toLowerCase(),
-          displayname: this.newUserData.vorname,
-          vorname: this.newUserData.vorname,
-          nachname: this.newUserData.nachname,
+          displayname: this.newUserData.surname,
+          surname: this.newUserData.surname,
+          lastname: this.newUserData.lastname,
           email: this.newUserData.email,
           phone: this.newUserData.phone,
           profileImage: 'http://genratio.de/wp-content/uploads/2019/04/DefaultAvatarZero700px.png',
@@ -312,12 +312,12 @@ export default {
       const newpw = this.$randomString(4);
       this.$newPassword(user, newpw)
       // Send new Password to its User
-      const text = `Dein neues Passwort: ${newpw}`
+      const text = `Dein neues Password: ${newpw}`
       try {
-        let res = await this.$sendMail(userdata.email, 'Passwort Reset', text);
-        this.$message.success('Neues Passwort an Benutzer versendet');
+        let res = await this.$sendMail(userdata.email, 'Password Reset', text);
+        this.$message.success('Neues Password an Benutzer versendet');
       } catch (err) {
-        this.$message.error('Neues Passwort konnte nicht versendet werden')
+        this.$message.error('Neues Password konnte nicht versendet werden')
       }
     }
   },

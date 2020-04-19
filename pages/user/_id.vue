@@ -56,9 +56,9 @@
       <div style="width:100%;display:flex;flex-direction:row;margin-top:2em;margin-bottom:2em;margin-right:2em;" v-if="userDataEdit === false">
         <!-- LEFT -->
         <div class="left">
-          <!--<p>Benutzername:-->
-          <p v-if="userData.vorname && userDataEdit === false">Surname:
-          <p v-if="userData.nachname && userDataEdit === false">Lastname:
+          <!--<p>Username:-->
+          <p v-if="userData.surname && userDataEdit === false">Surname:
+          <p v-if="userData.lastname && userDataEdit === false">Lastname:
           <p v-if="userData.email && userDataEdit === false">
             E-Mail Address:
           </p>
@@ -72,15 +72,15 @@
             <p>Phone: </p>
           </div>
           <!--<p v-if="userDataEdit === true">
-            Passwort:
+            Password:
           </p>-->
         </div>
 
 
         <!-- RIGHT -->
         <div class="right">
-          <b class="genUserData">{{ userData.vorname }}</b></p>
-          <b class="genUserData">{{ userData.nachname }}</b></p>
+          <b class="genUserData">{{ userData.surname }}</b></p>
+          <b class="genUserData">{{ userData.lastname }}</b></p>
 
           <p v-if="userData.email && userDataEdit === false">
             <b>{{ userData.email }}</b>
@@ -116,7 +116,7 @@
       </div>
     </div>
 
-    <!-- Passwort Reset-->
+    <!-- Password Reset-->
     <div v-if="userDataEdit === true">
 
     <a-drawer
@@ -273,8 +273,8 @@ export default {
         let data = {
           _id: this.authUser.username,
           _rev: this.userData._rev,
-          vorname: this.userData.vorname,
-          nachname: this.userData.nachname,
+          surname: this.userData.surname,
+          lastname: this.userData.lastname,
           displayname: this.userData.displayname,
           email: this.userData.email,
           phone: this.userData.phone,

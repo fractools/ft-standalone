@@ -1,28 +1,11 @@
 const expect = require('expect');
 const pkg = require('../../package');
+const testdata = require('./testdata/users.testdata');
 
 describe('Users', () => {
   let users;
-  let userList = [
-    {
-      username: 'testUser',
-      password: { salt: 'xyz', passwordHash: 'xyz' },
-      role: 'User',
-      token: '123',
-      _id: 'testUser',
-      _rev: '1-xyz'
-    }
-  ];
-  let userDataList = [
-    {
-      displayname: 'Test',
-      vorname: 'Test',
-      nachname: 'User',
-      email: 'testmail@test.de',
-      _id: 'testUser',
-      _rev: '1-xyz'
-    }
-  ]
+  let userList = testdata.userList;
+  let userDataList = testdata.userDataList;
 
   beforeEach(async () => {
     pkg.testing = true;
@@ -30,82 +13,77 @@ describe('Users', () => {
     users = new Users();
   });
 
-  it('should list a single user', async () => {
-    let userTest = await users.getUser('testUser');
-    expect(userTest).toEqual(userList[0]);
+  it('should add and list a new user', async () => {
+    const newUser = testdata.testUsers[0];
+    await users.registerUser(newUser);
+    let userTestList = await users.listAllUsers();
+    let postedUser = await users.getUser(newUser.username);
+    expect(newUser.username).toEqual(postedUser.username);
   });
 
   it('should list all users', async () => {
+    testdata.testUsers.forEach(async (user) => await users.registerUser(user));
     let userTestList = await users.listAllUsers();
-    expect(userTestList).toEqual(userList);
-  });
-
-  it('should add a new user', async () => {
-    const newUser = {
-      _id: 'testUser2',
-      username: 'testUser2',
-      password: 'test',
-      role: 'User'
-    };
-    await users.registerUser(newUser);
-    let userTestList = await users.listAllUsers();
-    let postedUser = await users.getUser('testUser2');
-    expect(postedUser).toEqual(userTestList[1]);
+    expect(userTestList.length).toEqual(4);
   });
 
   it('should remove user', async () => {
-    await users.removeUser('testUser');
+    const newUser = testdata.testUsers[0];
+    await users.registerUser(newUser);
+    await users.removeUser(newUser.username);
     let userTestList = await users.listAllUsers();
     expect(userTestList.length).toEqual(0);
   });
 
   it('should update user', async () => {
-    let userToUpdate = await users.getUser('testUser');
-    userToUpdate.username = 'updatedTestUser';
+    const newUser = testdata.testUsers[0];
+    await users.registerUser(newUser);
+    let userToUpdate = await users.getUser(newUser.username);
+    userToUpdate.username = 'Marianne';
     await users.updateUser(userToUpdate);
-    let userTestList = await users.listAllUsers();
-    let updatedUser = await users.getUser('testUser');
+    let updatedUser = await users.getUser(userToUpdate._id);
     expect(updatedUser.username).toEqual(userToUpdate.username);
   });
 
   it('should update password', async () => {
-    let userToUpdate = await users.getUser('testUser');
+    const newUser = testdata.testUsers[0];
+    await users.registerUser(newUser);
+    let userToUpdate = await users.getUser(newUser.username);
     await users.setNewPassword(userToUpdate, 'newPassword');
-    userToUpdate = await users.getUser('testUser');
+    userToUpdate = await users.getUser(newUser.username);
     let result = await users.checkPassword(userToUpdate, 'newPassword');
     expect(result).toEqual('Password matches');
   });
 
   it('should add new userdata', async () => {
-    const userData = {
-      _id: 'testUser',
-      displayname: 'Test',
-      vorname: 'Test',
-      nachname: 'User',
-      email: 'testmail@test.de',
-    };
+    const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
-    let postedUserData = await users.getUserData('testUser');
+    let postedUserData = await users.getUserData(userData._id);
     expect(postedUserData).toEqual(userData);
   });
 
   it('should list all userdata', async () => {
+    testdata.testUserData.forEach(async (userdata) => await users.setupUserData(userdata));
     let userDataTestList = await users.listAllUserData();
-    expect(userDataTestList).toEqual(userDataList);
+    expect(userDataTestList.length).toEqual(4);
   });
 
   it('should remove userdata', async () => {
-    await users.removeUserData('testUser');
+    const userData = testdata.testUserData[0];
+    await users.setupUserData(userData);
+    await users.removeUserData(userData._id);
     let userDataTestList = await users.listAllUserData();
     expect(userDataTestList.length).toEqual(0);
   });
 
   it('should update userdata', async () => {
-    let userDataToUpdate = await users.getUserData('testUser');
+    const userData = testdata.testUserData[0];
+    await users.setupUserData(userData);
+    let userDataToUpdate = await users.getUserData(userData._id);
     userDataToUpdate.diplayname = 'Marco';
     await users.updateUserData(userDataToUpdate);
     let userTestList = await users.listAllUserData();
-    let updatedUser = await users.getUserData('testUser');
+    let updatedUser = await users.getUserData(userData._id);
     expect(updatedUser.displayname).toEqual(userDataToUpdate.displayname);
   });
 

@@ -42,18 +42,6 @@ export default {
   color: white;
   padding: 1em;
 }
-.previewFlexContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
-.previewImage {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  border: 1px solid #ebebeb;
-  margin: 5px;
-}
 @media screen and (max-width: 650px) {
   .pageContainer {
     padding: 0.25em;
