@@ -1,4 +1,4 @@
-const PouchDB = require('../adapters/pouchAdapter'),
+const PouchDB = require('../adaptors/pouchAdaptor'),
       Logger = require('../lib/logger'),
       { saltHashPassword, genRandomString } = require('../lib/tokenizer'),
       { authInit, fetch, putDoc } = require('../lib/genPouch');

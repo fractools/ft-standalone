@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import socket from '~/plugins/socket.io.js'
 import { genid } from '../lib/idgenerator'
-import PouchDB from 'pouchdb'
 import pkg from '~/package'
 
-const server = pkg.remotePouchDB
+const server = pkg.remotePouchDB;
 
 
 // Fetch AllDocs from PouchDB

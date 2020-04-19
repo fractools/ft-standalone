@@ -1,4 +1,4 @@
-const PouchDB = require('../adapters/pouchAdapter'),
+const PouchDB = require('../adaptors/pouchAdaptor'),
       pkg = require('../../package'),
       // Import lib
       Logger = require('../lib/logger'),

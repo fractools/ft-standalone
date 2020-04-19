@@ -1,5 +1,5 @@
 // No need to Define the Rest expect Custom Methods
-const PouchDB = require('../adapters/pouchAdapter'),
+const PouchDB = require('../adaptors/pouchAdaptor'),
       config = require('../fractools.config'),
       pkg = require('../../package'),
       // logger = require('./logger'),
