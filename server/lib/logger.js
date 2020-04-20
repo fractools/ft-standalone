@@ -26,6 +26,12 @@ class Logger {
       socketid: socketid
     };
 
+    let docs = await fetch('logs');
+    if (socket && socket.broadcast) {
+      socket.broadcast.emit(`documents`, docs, 'logs');
+      socket.emit(`documents`, docs, 'logs');
+    };
+
     this.Stack.push(log);
     return this.executeStack();
   };
