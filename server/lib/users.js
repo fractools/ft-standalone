@@ -1,29 +1,34 @@
-const PouchDB = require('../adaptors/pouchAdaptor');
+const PouchDB = require('pouchdb');
 const Logger = require('./logger');
 
-const pkg = require('../../package');
+let pkg = require('../../package'),
+      config = require('../fractools.config');
 
 const genPouch = require('./genPouch');
 const { saltHashPasswordRegister,
-        saltHashPassword } = require('./tokenizer');
+        saltHashPassword,
+        genRandomString } = require('./tokenizer');
 
 let logger, userdb, userDatadb;
 
 let fetch;
 
 class Users {
-  constructor(){
-    userdb = new PouchDB(`./database/user`);
-    userDatadb = new PouchDB(`./database/userdata`);
+  constructor(dbPath) {
+    userdb = new PouchDB(`${dbPath}/user`);
+    userDatadb = new PouchDB(`${dbPath}/userdata`);
 
-    fetch = genPouch.fetch;
+    // fetch = genPouch.fetch;
   };
 
   async registerUser(user) {
     const saltPW = saltHashPasswordRegister(user.password);
     const userToPost = { ...user, password: saltPW };
     let resUser = await userdb.put(userToPost);
-    let fetchUser = await fetch('user');
+    let fetchUser = await userdb.allDocs({
+      include_docs: true,
+      attachments: false
+    });
     return resUser;
   };
 
@@ -34,7 +39,10 @@ class Users {
       _rev: userInDB._rev,
       ...user
     });
-    let fetchUser = await fetch('user');
+    let fetchUser = await userdb.allDocs({
+      include_docs: true,
+      attachments: false
+    });
     return resUser;
   };
 
@@ -77,7 +85,10 @@ class Users {
 
   async setupUserData(userData) {
     let resUserData = await userDatadb.put(userData);
-    let fetchUserData = await fetch('userdata');
+    let fetchUser = await userDatadb.allDocs({
+      include_docs: true,
+      attachments: false
+    });
     return resUserData;
   };
 
@@ -88,7 +99,11 @@ class Users {
       _rev: userDataInDB._rev,
       ...userData
     });
-    let fetchUserData = await fetch('userdata');
+    let fetchUserData = await userDatadb.allDocs({
+      include_docs: true,
+      attachments: false
+    });
+    let data = fetchUserData.rows.map(row => row.doc);
     return resUserData;
   };
 

@@ -1,16 +1,24 @@
 const PouchDB = require('../adaptors/pouchAdaptor'),
+      { genRandomString } = require('../lib/tokenizer'),
       config = require('../fractools.config'),
       pkg = require('../../package'),
       server = config.remotePouchDB;
+
+let dbPath = config.databasePath;
 
 if (!server && !pkg.testing) {
   console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
 };
 
+if (pkg.testing) {
+  const ranStr = genRandomString(15);
+  dbPath = 'testdatabase/' + ranStr;
+}
+
 async function dbExists(database) {
   let data;
   try {
-    let db = new PouchDB(`./database/${database}`);
+    let db = new PouchDB(`${dbPath}/${database}`);
     let res = await db.allDocs({
       include_docs: true,
       attachments: false
@@ -27,7 +35,7 @@ async function dbExists(database) {
 async function replicate(database) {
   try {
     if (server) {
-      let db = new PouchDB(`./database/${database}`);
+      let db = new PouchDB(`${dbPath}/${database}`);
       await db.replicate.to(`http://${server}/${database}`, { live: false, retry: false });
       await db.replicate.from(`http://${server}/${database}`, { live: false, retry: false });
       console.dir(` ######## [ Server Database ] ########  ${database} Replicated`);
@@ -39,7 +47,7 @@ async function replicate(database) {
 };
 
 async function fetch(database) {
-  let db = new PouchDB(`./database/${database}`);
+  let db = new PouchDB(`${dbPath}/${database}`);
   let data;
   try {
     let alldocs = await db.allDocs({
@@ -54,7 +62,7 @@ async function fetch(database) {
 };
 
 async function putDoc(database, id, data) {
-  let db = new PouchDB(`./database/${database}`);
+  let db = new PouchDB(`${dbPath}/${database}`);
   try {
     let doc = await db.get(id);
     let res = await db.put({
@@ -69,7 +77,7 @@ async function putDoc(database, id, data) {
 };
 
 async function postDoc(database, id, data) {
-  let db = new PouchDB(`./database/${database}`);
+  let db = new PouchDB(`${dbPath}/${database}`);
   try {
     let res = await db.put({
       _id: id,
@@ -82,7 +90,7 @@ async function postDoc(database, id, data) {
 };
 
 async function docCount(database) {
-  let db = new PouchDB(`./database/${database}`);
+  let db = new PouchDB(`${dbPath}/${database}`);
   let dbRemote = new PouchDB(`http://${server}/${database}`);
   let localDocCount;
   let remoteDocCount;

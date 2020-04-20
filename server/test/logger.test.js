@@ -1,6 +1,10 @@
 const expect = require('expect'),
       pkg = require('../../package'),
-      { genRandomString } = require('../lib/tokenizer');
+      { genRandomString } = require('../lib/tokenizer'),
+      config = require('../fractools.config');
+
+let dbPath = './testdatabase';
+
 
 describe('Logger', function () {
 
@@ -9,7 +13,7 @@ describe('Logger', function () {
   beforeEach(function () {
     pkg.testing = true;
     const PouchDB = require('../adaptors/pouchAdaptor');
-    logs = new PouchDB('./database/logs');
+    logs = new PouchDB(`${dbPath}/logs`);
     logger = require('../lib/logger');
   });
 

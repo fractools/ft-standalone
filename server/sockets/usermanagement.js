@@ -1,7 +1,9 @@
 const logger = require('../lib/logger');
 const Users = require('../lib/users');
+const config = require('../fractools.config');
+const dbPath = config.databasePath;
 
-const users = new Users();
+const users = new Users(dbPath);
 
 module.exports = (socket, clients) => {
 

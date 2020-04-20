@@ -20,7 +20,7 @@
       <a-form v-else id="authInput" @submit.prevent="login">
         <img id="pageLoginLogo" src="@/assets/pictures/layout/logo.png"/>
 
-        <p style="text-align:center;color:white;">Register first User:</p>
+        <!-- <p style="text-align:center;color:white;">Register first User:</p> -->
 
         <a-form-item>
           <a-input class="inputLogin" placeholder="Username" v-model="username" type="text" v-autofocus @keyup.enter.native="register"/>
@@ -139,6 +139,7 @@ export default {
       try {
         await this.$addUser(fullUser);
         this.$store.commit('INIT_USER', false);
+        this.login();
       } catch (e) {
         this.$notification['error']({
           message: 'Login Error',
