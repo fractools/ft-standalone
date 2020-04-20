@@ -16,7 +16,7 @@ async function connectedSocket(socket) {
 }
 
 export async function fetchDBs (socket) {
-  console.log(` ######## [ Client Databases ] ########  Fetch the List of Databases`);
+  // console.log(` ######## [ Client Databases ] ########  Fetch the List of Databases`);
   // Databases
   const database = 'databases'
   let databases = [ database ]

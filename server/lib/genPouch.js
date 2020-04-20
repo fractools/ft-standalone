@@ -62,6 +62,7 @@ async function putDoc(database, id, data) {
       _rev: doc._rev,
       ...doc = data
     });
+    return res;
   } catch (e) {
     throw new Error(e);
   };
@@ -74,6 +75,7 @@ async function postDoc(database, id, data) {
       _id: id,
       ...data
     });
+    return res;
   } catch (e) {
     throw new Error(e);
   };

@@ -19,7 +19,7 @@ class PouchAdaptor {
     return allUsers.filter((user) => user._id === id)[0];
   };
 
-  put(data) {
+  async put(data) {
     let indexToRemove = this[this.db].rows.map(e => e.id).indexOf(data._id);
 
     if (!data._rev) {
@@ -47,11 +47,21 @@ class PouchAdaptor {
     } else {
       this[this.db].rows.push(newUser);
     };
+
+    await this.stall(75);
+
+    if (this[this.db].rows.length != 0) {
+      return { id: data._id, ok: true };
+    }
   };
 
   remove(id) {
     let indexToRemove = this[this.db].rows.map(e => e.id).indexOf(id.username);
     this[this.db].rows.splice(0, 1);
+  };
+
+  async stall(stallTime = 2000) {
+    await new Promise(resolve => setTimeout(resolve, stallTime));
   };
 };
 

@@ -6,10 +6,10 @@
       <a-divider orientation="left" class="dividerUserList"><h2 style="witdh: 100%;">Uploader</h2></a-divider>
       <section>
         <input type="file" id="file" ref="files" @change="handleFileUpload()" style="position:absolute;top:0;left:0;display:none;" multiple/>
-        <a-button @click="$refs.files.click()" style="margin-top:0.5em;margin-bottom:0.5em;" block>Datei zum Upload auswählen</a-button>
-        <h5 style="padding: 1em 0 1em 0;"><b>Pfad für Dateiupload: </b><em>(Tip: So werden neue Ordner und Unterordner angelegt: <b>'ordner/unterordner1/unterordner2'</b> Der erste und letzte Slash <b>/</b>  werden weggelassen.)</em></h5>
-        <a-input v-model="path" class="inputCenter" placeholder="Pfad für Dateiupload"/>
-        <a-button v-if="files && path" type="primary" style="margin-top:0.5em;margin-bottom:0.5em;" @click="submitFile()" block>Hochladen</a-button>
+        <a-button @click="$refs.files.click()" style="margin-top:0.5em;margin-bottom:0.5em;" block>Choose files to upload</a-button>
+        <h5 style="padding: 1em 0 1em 0;"><b>Upload to: </b><em v-if="!path">Please enter a path</em><em v-else>/{{ path }}/</em></h5>
+        <a-input v-model="path" class="inputCenter" placeholder="Uploadpath"/>
+        <a-button v-if="files[0] && path" type="primary" style="margin-top:0.5em;margin-bottom:0.5em;" @click="submitFile()" block>Upload</a-button>
       </section>
 
       <!-- Progressbar for SHowing free Disk Space -->
@@ -48,23 +48,23 @@ const fileserver = `http://${pkg.backend}/uploads/`;
 
 // Collumns for Filelist Table
 const filesColumns = [{
-  title: 'Pfad',
+  title: 'Path',
   dataIndex: 'path',
   scopedSlots: { customRender: 'path' },
 }, {
-  title: 'Dateiname',
+  title: 'Filename',
   dataIndex: 'filename',
   scopedSlots: { customRender: 'filename' },
 }, {
-  title: 'Datum',
+  title: 'Date',
   dataIndex: 'date',
   scopedSlots: { customRender: 'date' },
 }, {
-  title: 'Benutzer',
+  title: 'User',
   dataIndex: 'author',
   scopedSlots: { customRender: 'author' },
 },{
-  title: 'Aktionen',
+  title: 'Actions',
   dataIndex: 'delete',
   scopedSlots: { customRender: 'delete' },
 }];
@@ -124,9 +124,13 @@ export default {
           // Post in to DB via Socket
           await this.$postDoc(filedata, `${database}`, filedata.author);
         };
-        this.$message.success('Dateien wurden erfolgreich hochgeladen')
+        this.$message.success('Files uploaded successfully!');
+        this.path = '';
+        this.files = [];
       } catch (err) {
         this.$message.error(`Fehler: ${err}`);
+        this.path = '';
+        this.files = [];
       };
 
       // Clear Input

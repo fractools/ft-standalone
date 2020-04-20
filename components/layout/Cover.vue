@@ -1,7 +1,7 @@
 <template lang="html">
   <section>
     <section>
-      <div id="dropdownAvatar" v-if="userData.profileImage">
+      <div id="dropdownAvatar" v-if="$store.state.authUser">
         <a-dropdown placement="bottomRight">
           <p class="ant-dropdown-link" style="cursor:pointer;">
             <img class="avatarFloatyRight" v-if="userData.profileImage" :src="userData.profileImage"/>
@@ -16,7 +16,7 @@
               <a-icon type="setting" />
               <span>Settings</span>
             </a-menu-item>
-            <a-menu-item @click="logout" key="2">
+            <a-menu-item @click="$router.push('/login')" key="2">
               <a-icon type="logout" />
               <span>Logout</span>
             </a-menu-item>
@@ -54,11 +54,6 @@ export default {
     }
   },
   methods: {
-    async logout() {
-      // $router.replace('/login') dont work - Nuxt crashes
-      this.$store.dispatch('logout').then(() => this.$router.go({ path: 'login' }))
-      socket.disconnect()
-    },
     goToProfile() {
       if (this.$nuxt.$route.path != '/user/' + this.$store.state.authUser.username) {
         this.$router.push('/user/' + this.$store.state.authUser.username)

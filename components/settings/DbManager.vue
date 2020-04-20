@@ -4,10 +4,10 @@
       <a-input placeholder="Datenbank-Name" @keyup.enter="postDB()" v-model="dbname"/>
     </div>
     <div style="padding: 0.5em 0 1em 0;">
-      <a-button type="primary" block @click="postDB()">Speichern</a-button>
+      <a-button type="primary" block @click="postDB()">Save</a-button>
     </div>
     <div>
-      <a-table :columns="cols" :dataSource="$store.state.databases" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" bordered>
+      <a-table :columns="cols" :dataSource="$store.state.databases" :locale="{ emptyText: 'No records' }" rowKey="_id" bordered>
         <template slot="name" slot-scope="text, record, index">
           {{ record.dbname }}
         </template>
@@ -27,16 +27,16 @@ export default {
   data() {
     return {
       database: 'databases',
-      cols: [{ // TODO Each record in table should have a unique `key` prop,or set `rowKey` to an unique primary key
+      cols: [{
         title: 'Name',
         dataIndex: 'name',
         scopedSlots: { customRender: 'name' },
       }, {
-        title: 'Benutzer',
+        title: 'User',
         dataIndex: 'author',
         scopedSlots: { customRender: 'author' },
       }, {
-        title: 'Aktionen',
+        title: 'Actions',
         dataIndex: 'delete',
         scopedSlots: { customRender: 'delete' },
       }],
@@ -51,7 +51,7 @@ export default {
       }
       try {
         await this.$postDB(db, db.author)
-        this.$message.success(`"${this.dbname}" wurde gespeichert`, 10)
+        this.$message.success(`"${this.dbname}" was saved!`, 10)
       } catch (err) {
         this.$message.error(`Fehler: ${err}`)
       }
@@ -60,9 +60,9 @@ export default {
     async remDB (obj) {
       try {
         await this.$remDoc(obj, this.database)
-        this.$message.success(`"${obj.dbname}" wurde gelöscht`, 10)
+        this.$message.success(`"${obj.dbname}" was deleted!`, 10)
       } catch (err) {
-        this.$message.error(`Fehler: ${err}`)
+        this.$message.error(`Error: ${err}`)
       }
     }
   },

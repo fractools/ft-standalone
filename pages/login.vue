@@ -60,6 +60,9 @@ import { mapState } from 'vuex'
 
 export default {
   layout: 'login',
+  mounted() {
+    this.$store.dispatch('logout');
+  },
   data() {
     return {
       username: '',
@@ -79,12 +82,24 @@ export default {
         });
         await this.$router.push('/');
         this.$pushClient(this.$store.state.authUser.username);
+        this.checkDiskSpace();
       } catch (e) {
         this.$notification['error']({
           message: 'Login Error',
           description: `${e.message}`
         })
       }
+    },
+    async checkDiskSpace() {
+      // Check available Disk Space
+      let diskData =  await this.$checkDiskspace();
+      if (diskData.freePercent <= 10) {
+        this.$notification['warning']({
+          duration: 0,
+          message: 'Limited Disk Space Left',
+          description: `The Disk is going to be full: ${diskData.freePercent.toFixed(2)}% left`
+        });
+      };
     },
     async register() {
       if (this.password !== this.password2) {
@@ -114,9 +129,7 @@ export default {
         lastname: this.lastname,
         email: this.email,
         phone: '',
-        profileImage: '~/assets/pictures/user/DefaultAvatar700px.png',
-        kontaktFavoriten: [],
-        kontaktListen: []
+        profileImage: ''
       }
       const fullUser = {
         user,

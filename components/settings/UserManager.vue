@@ -2,7 +2,7 @@
   <section>
     <div class="serManagement">
       <section class="newUser">
-        <a-divider class="dividerUserList" orientation="left"><h2>Benutzer</h2></a-divider>
+        <a-divider class="dividerUserList" orientation="left"><h2>User</h2></a-divider>
         <section class="newUserData">
 
           <!-- General Data - Login -->
@@ -29,7 +29,7 @@
 
           <!-- Personal Data -->
           <div class="persoData">
-            <a-divider orientation="left"><h3>Persönliche Daten</h3></a-divider>
+            <a-divider orientation="left"><h3>Personal data</h3></a-divider>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
@@ -43,12 +43,12 @@
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="E-Mail-Adresse"
+            placeholder="E-Mail address"
             v-model="newUserData.email"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Telefonnummer"
+            placeholder="Phone"
             v-model="newUserData.phone"/>
           </div>
         </section>
@@ -69,8 +69,8 @@
               </a-radio-button>
               <a-radio-button
                 style="min-width:15em;flex-grow:1;flex-basis:0;"
-                value="Benutzer">
-                <p style="text-align: center;">Benutzer</p>
+                value="User">
+                <p style="text-align: center;">User</p>
               </a-radio-button>
           </a-radio-group><br>
         </div>
@@ -82,7 +82,7 @@
           type="primary"
           @click="addUser"
           class="withGap">
-          Benutzer anlegen
+          Add user
         </a-button>
       </section>
 
@@ -92,10 +92,10 @@
 
       <!-- Userlist  ########################################################################  SECTION -->
       <section class="userList">
-        <a-divider class="dividerUserList" orientation="left"><h2>Benutzer Liste</h2></a-divider>
+        <a-divider class="dividerUserList" orientation="left"><h2>Userlist</h2></a-divider>
 
         <!-- new Table -->
-        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" bordered>
+        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'No records' }" rowKey="_id" bordered>
           <template
             v-for="col in
             [
@@ -122,12 +122,12 @@
               <a-button @click="cancelUser(record.username)"><a-icon type="close-circle"/></a-button>
             </span>
             <span v-else>
-              <a @click="editUser(record.username)">Bearbeiten</a>
+              <a @click="editUser(record.username)">Edit</a>
             </span>
           </div>
         </template>
         <template slot="password" slot-scope="text, record, index">
-          <a-button @click="newPassword(record._id)">Zurücksetzen</a-button></p>
+          <a-button @click="newPassword(record._id)">Reset password</a-button></p>
         </template>
         </a-table>
 
@@ -143,11 +143,11 @@ import { mapState } from 'vuex';
 
 // Collumns for Userlist Table
 const usersColumns = [{
-  title: 'Benutzer',
+  title: 'User',
   dataIndex: 'username',
   scopedSlots: { customRender: 'username' },
 },{
-  title: 'Rolle',
+  title: 'Role',
   dataIndex: 'role',
   scopedSlots: { customRender: 'role' },
 },{
@@ -155,7 +155,7 @@ const usersColumns = [{
   dataIndex: 'password',
   scopedSlots: { customRender: 'password' },
 },{
-  title: 'Aktionen',
+  title: 'Actions',
   dataIndex: 'delete',
   scopedSlots: { customRender: 'delete' },
 }];
@@ -186,7 +186,7 @@ export default {
       // Fetch UserData
       this.usersData = await this.$fetchAllDocs('userdata');
     } catch (err) {
-      this.$message.error(`Fehler beim Laden der Benutzer`);
+      this.$message.error(`Error while loading users`);
     }
   },
   methods: {
@@ -221,13 +221,13 @@ export default {
           role: this.newUserCol.role
         };
         await this.$putDoc(obj, obj._id, obj._rev, 'user');
-        this.$message.success('Benutzerdaten gespeichert!');
+        this.$message.success('User saved!');
         this.users = await this.$fetchAllDocs('user');
         this.userData = await this.$fetchAllDocs('userdata');
         this.userDataEdit = false;
         this.record = null;
       } catch (err) {
-        this.$message.error(`Fehler beim Speichern der Benutzerdaten`);
+        this.$message.error(`Error while saving user.`);
       }
       this.cancel(key);
     },
@@ -261,27 +261,24 @@ export default {
           lastname: this.newUserData.lastname,
           email: this.newUserData.email,
           phone: this.newUserData.phone,
-          profileImage: 'http://genratio.de/wp-content/uploads/2019/04/DefaultAvatarZero700px.png',
-          kontaktFavoriten: [],
-          kontaktListen: []
+          profileImage: ''
         }
-        // Merge User Informations
+
         const fullUser = {
           user,
           userData
         }
-        // Register new User into Database via Socket
+
         let reg = await this.$addUser(fullUser);
-        // Finish Adding Process
-        this.newUser = {}
-        this.newUserData= {}
-        // Fetch new Data
-        this.users = await this.$fetchAllDocs('user')
-        this.usersData = await this.$fetchAllDocs('userdata')
-        this.$message.success('Benutzer wurde angelegt')
+
+        this.newUser = {};
+        this.newUserData= {};
+
+        this.users = await this.$fetchAllDocs('user');
+        this.usersData = await this.$fetchAllDocs('userdata');
+        this.$message.success('User was saved');
       } catch (err) {
-        // console.log(err);
-        this.$message.error(`Fehler beim Anlegen des Benutzers`);
+        this.$message.error(`Error displaying user`);
       }
     },
 
@@ -294,13 +291,13 @@ export default {
         // UserData
         await this.$remDoc(this.newUserCol, 'userdata');
         // Fetch new Data
-        this.users = await this.$fetchAllDocs('user')
-        this.usersData = await this.$fetchAllDocs('userdata')
+        this.users = await this.$fetchAllDocs('user');
+        this.usersData = await this.$fetchAllDocs('userdata');
         // Finish Removing User
         this.record = null;
-        this.$message.success('Benutzer gelöscht!');
+        this.$message.success('User deleted!');
       } catch (err) {
-        this.$message.error(`Fehler beim Löschen des Benutzers`);
+        this.$message.error(`Error deleting user.`);
       }
     },
 
@@ -310,14 +307,14 @@ export default {
       const userdata = this.usersData.filter(item => key === item._id)[0];
       // Generate new Password
       const newpw = this.$randomString(4);
-      this.$newPassword(user, newpw)
+      this.$newPassword(user, newpw);
       // Send new Password to its User
-      const text = `Dein neues Password: ${newpw}`
+      const text = `Your new password: ${newpw}`
       try {
         let res = await this.$sendMail(userdata.email, 'Password Reset', text);
-        this.$message.success('Neues Password an Benutzer versendet');
+        this.$message.success('New password was sent.');
       } catch (err) {
-        this.$message.error('Neues Password konnte nicht versendet werden')
+        this.$message.error('Error sending new password.');
       }
     }
   },

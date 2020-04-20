@@ -13,18 +13,6 @@ import FingerprintSpinner from '~/components/layout/loadingIndicator/Fingerprint
 import '../assets/style/multiselect_custom.css'
 
 export default {
-  async mounted() {
-    // Check available Disk Space
-    let diskData =  await this.$checkDiskspace();
-    if (diskData.freePercent <= 10) {
-      this.$notification['warning']({
-          duration: 0,
-          message: 'Limited Disk Space Left',
-          description:
-            `The Disk is going to be full: ${diskData.freePercent.toFixed(2)}% left`,
-      });
-    };
-  },
   components: {
     FingerprintSpinner
   }

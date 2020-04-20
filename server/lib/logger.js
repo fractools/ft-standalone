@@ -1,11 +1,14 @@
 const moment = require('moment'),
       { postDoc, fetch } = require('./genPouch'),
-      { genRandomString } = require('./tokenizer');
+      { genRandomString } = require('./tokenizer')
+      Stack = require('./stack');
 
 moment.locale('de');
 
 class Logger {
-  constructor(){};
+  constructor(){
+    this.Stack = new Stack();
+  };
 
   async createLog(socket, topic, level, msg, client) {
     let user = 'Node';
@@ -22,22 +25,27 @@ class Logger {
       user: user,
       socketid: socketid
     };
-    try {
-      await postDoc('logs', `${log.time}${genRandomString(3)}`, log);
-    } catch (e) {
-      console.log(e);
-    }
-    // Update and Broadcast Client Logs
-    try {
-      let docs = await fetch('logs');
-      if (socket && socket.broadcast) {
-        socket.broadcast.emit(`documents`, docs, 'logs');
-        socket.emit(`documents`, docs, 'logs');
+
+    this.Stack.push(log);
+    return this.clearStack();
+  };
+
+  async clearStack() {
+    let current, result;
+    while (current = this.Stack.pop()) {
+      try {
+        result = await postDoc('logs', `${current.time}${genRandomString(3)}`, current);
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+    };
+    return result;
+  };
+
+  async listAllLogs() {
+    let logList = await fetch('logs');
+    return logList;
+  };
 }
 
 class SingeltonLogger {
