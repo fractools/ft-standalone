@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import PouchDB from 'pouchdb';
 import { mapState } from 'vuex';
 
 // Collumns for Userlist Table
@@ -160,11 +159,15 @@ const usersColumns = [{
   scopedSlots: { customRender: 'delete' },
 }];
 
-// User and UserData Array for fetch User from Database
-const users = [];
-const usersData = [];
-
 export default {
+  async mounted() {
+    try {
+      this.users = await this.$fetchAllDocs('user');
+      this.usersData = await this.$fetchAllDocs('userdata');
+    } catch (err) {
+      this.$message.error(`Error while loading users`);
+    }
+  },
   data() {
     this.cacheData = users.map(item => ({ ...item }));
     return {
@@ -176,17 +179,6 @@ export default {
       newUserData: {},
       newUserCol: {},
       newUserDataCol: {}
-    }
-  },
-  //  FetcusersDatah User Database
-  async mounted() {
-    try {
-      // Fetch User
-      this.users = await this.$fetchAllDocs('user');
-      // Fetch UserData
-      this.usersData = await this.$fetchAllDocs('userdata');
-    } catch (err) {
-      this.$message.error(`Error while loading users`);
     }
   },
   methods: {
@@ -229,7 +221,7 @@ export default {
       } catch (err) {
         this.$message.error(`Error while saving user.`);
       }
-      this.cancel(key);
+      this.cancelUser(key);
     },
 
     cancelUser (key) {

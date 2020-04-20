@@ -12,7 +12,7 @@ Vue.prototype.$addUser = async (fullUser) => {
       return resolve(result);
     });
   });
-}
+};
 
 Vue.prototype.$newPassword = async (user, password) => {
   console.log(` ######## [ Client Usermanagement ] ########  Set New Password for User "${user.username}"`);
@@ -22,7 +22,7 @@ Vue.prototype.$newPassword = async (user, password) => {
       return resolve(result);
     });
   });
-}
+};
 
 Vue.prototype.$checkPassword = async (user, password) => {
   return await new Promise((resolve, reject) => {
@@ -31,4 +31,4 @@ Vue.prototype.$checkPassword = async (user, password) => {
       return resolve(result);
     });
   });
-}
+};

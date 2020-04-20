@@ -27,10 +27,10 @@ class Logger {
     };
 
     this.Stack.push(log);
-    return this.clearStack();
+    return this.executeStack();
   };
 
-  async clearStack() {
+  async executeStack() {
     let current, result;
     while (current = this.Stack.pop()) {
       try {

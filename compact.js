@@ -18,7 +18,6 @@ const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server);
 
-
 // Instantiate Nuxt.js Options
 const config = require('./nuxt.config.js');
 config.dev = !isProd;

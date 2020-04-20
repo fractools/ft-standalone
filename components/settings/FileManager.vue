@@ -25,7 +25,7 @@
     <section class="filelistFilmanagerPage">
       <a-divider orientation="left"><h2>Dateiliste</h2></a-divider>
 
-      <a-table :columns="filesColumns" :dataSource="reversedFiles" :locale="{ emptyText: 'Keine Einträge' }" rowKey="_id" bordered>
+      <a-table :columns="filesColumns" :dataSource="reversedFiles" :locale="{ emptyText: 'No records' }" rowKey="_id" bordered>
         <template slot="filename" slot-scope="text, record, index">
           <a target="_blank" v-bind:href=' fileserver + record.path + "/" + record.filename '>{{ record.filename }}</a>
         </template>

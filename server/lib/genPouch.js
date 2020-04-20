@@ -103,8 +103,6 @@ async function docCount(database) {
 };
 
 async function dbInit() {
-  console.dir(' ######## [ Server Engine ] ######## Initialize Databases ');
-  // logger('Database', 'info', `Initialize Databases`)
   let databases = [];
   try {
     await replicate('databases');
@@ -121,7 +119,6 @@ async function dbInit() {
     };
   };
   console.dir(' ######## [ Server Engine ] ######## Databases Initialized ');
-  // logger('Database', 'info', `Databases Initialized`)
 };
 
 async function authInit() {

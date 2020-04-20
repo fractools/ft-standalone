@@ -15,7 +15,7 @@ Vue.prototype.$fetchAllDocs = async function (database) {
       return resolve(result);
     });
   });
-}
+};
 
 // Fetch single Doc from PouchDB
 Vue.prototype.$getDoc = async function (id, database) {
@@ -26,7 +26,7 @@ Vue.prototype.$getDoc = async function (id, database) {
       return resolve(result);
     });
   });
-}
+};
 
 // Post Doc into PouchDB
 Vue.prototype.$postDoc = async function (data, database, user) {
@@ -38,7 +38,7 @@ Vue.prototype.$postDoc = async function (data, database, user) {
       return resolve(result);
     });
   });
-}
+};
 
 // Post Doc into PouchDB
 Vue.prototype.$postDocOwnId = async function (data, database, user, id) {
@@ -50,7 +50,7 @@ Vue.prototype.$postDocOwnId = async function (data, database, user, id) {
     });
   });
   socket.emit(`send-document`, database, data, id)
-}
+};
 
 // Update Doc on PouchDB
 Vue.prototype.$putDoc = async function (data, id, rev, database) {
@@ -61,7 +61,7 @@ Vue.prototype.$putDoc = async function (data, id, rev, database) {
       return resolve(result);
     });
   });
-}
+};
 
 // Remove Doc off PouchDB
 Vue.prototype.$remDoc = async function (obj, database) {
@@ -72,7 +72,7 @@ Vue.prototype.$remDoc = async function (obj, database) {
       return resolve(result);
     });
   });
-}
+};
 
 // Replication DB Remote
 Vue.prototype.$replicate = async function (database) {
@@ -83,7 +83,7 @@ Vue.prototype.$replicate = async function (database) {
       return resolve(result);
     });
   });
-}
+};
 
 // Post Doc into PouchDB
 Vue.prototype.$postDB = async function (data, user) {
@@ -95,7 +95,7 @@ Vue.prototype.$postDB = async function (data, user) {
       return resolve(result);
     });
   });
-}
+};
 
 // Replication DB Remote
 Vue.prototype.$replicateFT = async function (server1, database1, server2, database2) {
@@ -106,4 +106,4 @@ Vue.prototype.$replicateFT = async function (server1, database1, server2, databa
       return resolve(result);
     });
   });
-}
+};

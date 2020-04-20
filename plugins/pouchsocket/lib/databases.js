@@ -1,4 +1,3 @@
-import PouchDB from 'pouchdb'
 import Vuex from 'vuex'
 import socket from '~/plugins/socket.io.js'
 import pkg from '../../../package'

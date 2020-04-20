@@ -2,18 +2,18 @@ const expect = require('expect');
 const pkg = require('../../package');
 const testdata = require('./testdata/users.testdata');
 
-describe('Users', () => {
+describe('Users', function () {
   let users;
   let userList = testdata.userList;
   let userDataList = testdata.userDataList;
 
-  beforeEach(async () => {
+  beforeEach(async function () {
     pkg.testing = true;
     const Users = require('../lib/users');
     users = new Users();
   });
 
-  it('should add and list a new user', async () => {
+  it('should add and list a new user', async function () {
     const newUser = testdata.testUsers[0];
     await users.registerUser(newUser);
     let userTestList = await users.listAllUsers();
@@ -21,13 +21,13 @@ describe('Users', () => {
     expect(newUser.username).toEqual(postedUser.username);
   });
 
-  it('should list all users', async () => {
+  it('should list all users', async function () {
     testdata.testUsers.forEach(async (user) => await users.registerUser(user));
     let userTestList = await users.listAllUsers();
     expect(userTestList.length).toEqual(4);
   });
 
-  it('should remove user', async () => {
+  it('should remove user', async function () {
     const newUser = testdata.testUsers[0];
     await users.registerUser(newUser);
     await users.removeUser(newUser.username);
@@ -35,7 +35,7 @@ describe('Users', () => {
     expect(userTestList.length).toEqual(0);
   });
 
-  it('should update user', async () => {
+  it('should update user', async function () {
     const newUser = testdata.testUsers[0];
     await users.registerUser(newUser);
     let userToUpdate = await users.getUser(newUser.username);
@@ -45,7 +45,7 @@ describe('Users', () => {
     expect(updatedUser.username).toEqual(userToUpdate.username);
   });
 
-  it('should update password', async () => {
+  it('should update password', async function () {
     const newUser = testdata.testUsers[0];
     await users.registerUser(newUser);
     let userToUpdate = await users.getUser(newUser.username);
@@ -55,20 +55,20 @@ describe('Users', () => {
     expect(result).toEqual('Password matches');
   });
 
-  it('should add new userdata', async () => {
+  it('should add new userdata', async function () {
     const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
     let postedUserData = await users.getUserData(userData._id);
     expect(postedUserData).toEqual(userData);
   });
 
-  it('should list all userdata', async () => {
+  it('should list all userdata', async function () {
     testdata.testUserData.forEach(async (userdata) => await users.setupUserData(userdata));
     let userDataTestList = await users.listAllUserData();
     expect(userDataTestList.length).toEqual(4);
   });
 
-  it('should remove userdata', async () => {
+  it('should remove userdata', async function () {
     const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
     await users.removeUserData(userData._id);
@@ -76,7 +76,7 @@ describe('Users', () => {
     expect(userDataTestList.length).toEqual(0);
   });
 
-  it('should update userdata', async () => {
+  it('should update userdata', async function () {
     const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
     let userDataToUpdate = await users.getUserData(userData._id);
