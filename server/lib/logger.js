@@ -46,18 +46,6 @@ class Logger {
     let logList = await fetch('logs');
     return logList;
   };
-}
+};
 
-class SingeltonLogger {
-  constructor() {
-    if (!SingeltonLogger.instance) {
-      SingeltonLogger.instance = new Logger();
-    }
-  };
-
-  getInstance() {
-    return SingeltonLogger.instance;
-  }
-}
-
-module.exports = SingeltonLogger;
+module.exports = new Logger();

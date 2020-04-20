@@ -1,10 +1,7 @@
 const socketStream = require('socket.io-stream'),
-      Logger = require('../lib/logger'),
+      logger = require('../lib/logger'),
       fs = require('fs')
       disk = require('diskusage');
-
-const logger = new Logger().getInstance();
-
 
 module.exports = (socket, clients) => {
 

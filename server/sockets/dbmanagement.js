@@ -1,7 +1,7 @@
 const PouchDB = require('../adaptors/pouchAdaptor'),
       pkg = require('../../package'),
       // Import lib
-      Logger = require('../lib/logger'),
+      logger = require('../lib/logger'),
       genPouch = require('../lib/genPouch'),
       // Extract Methods form Lib
       replicate = genPouch.replicate,
@@ -10,8 +10,6 @@ const PouchDB = require('../adaptors/pouchAdaptor'),
       dbExists = genPouch.dbExists,
       // Define PouchDB-Remote-Server and Database
       server = pkg.remotePouchDB;
-
-const logger = new Logger().getInstance();
 
 module.exports = (socket, clients) => {
   // Fetch Documents Count in Database

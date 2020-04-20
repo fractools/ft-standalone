@@ -1,7 +1,6 @@
-const Logger = require('../lib/logger');
+const logger = require('../lib/logger');
 const Users = require('../lib/users');
 
-const logger = new Logger().getInstance();
 const users = new Users();
 
 module.exports = (socket, clients) => {

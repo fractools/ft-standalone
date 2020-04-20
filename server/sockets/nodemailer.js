@@ -1,9 +1,7 @@
 "use strict";
 const nodemailer = require("nodemailer"),
-      Logger = require('../lib/logger'),
+      logger = require('../lib/logger'),
       config = require('../fractools.config');
-
-const logger = new Logger().getInstance();
 
 async function main(to, subject, text){
   // create reusable transporter object using the default SMTP transport

@@ -1,7 +1,5 @@
-const Logger = require('../lib/logger'),
+const logger = require('../lib/logger'),
       pkg = require('../../package');
-
-const logger = new Logger().getInstance();
 
 module.exports = (app, io) => {
 

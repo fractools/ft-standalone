@@ -1,5 +1,4 @@
-const Logger = require('../lib/logger');
-const logger = new Logger().getInstance();
+const logger = require('../lib/logger');
 
 // Socket Module for interacting with Client Network
 module.exports = (socket, clients) => {

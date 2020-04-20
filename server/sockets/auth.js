@@ -1,9 +1,7 @@
 const PouchDB = require('../adaptors/pouchAdaptor'),
-      Logger = require('../lib/logger'),
+      logger = require('../lib/logger'),
       { saltHashPassword, genRandomString } = require('../lib/tokenizer'),
       { authInit, fetch, putDoc } = require('../lib/genPouch');
-
-const logger = new Logger().getInstance();
 
 module.exports = async (socket, io, clients) => {
 
@@ -14,7 +12,7 @@ module.exports = async (socket, io, clients) => {
     console.error('ERROR: ', e);
 
   } finally {
-    
+
     socket.on(`login`, async (data, fn) => {
       console.dir(` ######## [ Server Engine ] ######## "${data.username}" logs in `);
       let client = { user: data.username, id: socket.id };

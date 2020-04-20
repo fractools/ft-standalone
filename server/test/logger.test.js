@@ -10,8 +10,7 @@ describe('Logger', () => {
     pkg.testing = true;
     const PouchDB = require('../adaptors/pouchAdaptor');
     logs = new PouchDB('./database/logs');
-    const Logger = require('../lib/logger');
-    logger = new Logger().getInstance();
+    logger = require('../lib/logger');
   });
 
   it('should create a new log', async () => {
@@ -32,10 +31,10 @@ describe('Logger', () => {
   });
 
   it('logger should be singelton', async () => {
-    let Logger = require('../lib/logger');
+    let logger = require('../lib/logger');
     let token = genRandomString(25);
     logger.token = token;
-    secondLogger = new Logger().getInstance();
+    secondLogger = require('../lib/logger');
     expect(logger).toEqual(secondLogger);
   });
 });

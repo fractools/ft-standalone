@@ -13,7 +13,6 @@ let fetch;
 
 class Users {
   constructor(){
-    logger = new Logger().getInstance();
     userdb = new PouchDB(`./database/user`);
     userDatadb = new PouchDB(`./database/userdata`);
 
