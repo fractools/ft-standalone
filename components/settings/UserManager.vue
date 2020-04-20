@@ -159,6 +159,10 @@ const usersColumns = [{
   scopedSlots: { customRender: 'delete' },
 }];
 
+// User and UserData Array for Cache Data
+const users = [];
+const usersData = [];
+
 export default {
   async mounted() {
     try {
