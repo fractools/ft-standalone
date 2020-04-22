@@ -1,36 +1,17 @@
 const expect = require('expect');
 const pkg = require('../../package');
 const testdata = require('./testdata/users.testdata');
-const { genRandomString } = require('../lib/tokenizer');
+const { genRandomString, rimraf, stall } = require('../lib/tools');
 const fs = require('fs');
-const path = require('path');
 
 describe('Users', function () {
-  let users;
-  let userList = testdata.userList;
-  let userDataList = testdata.userDataList;
-  let dbDir;
-
-  let rimraf = function (dir_path) {
-    if (fs.existsSync(dir_path)) {
-      fs.readdirSync(dir_path).forEach(function(entry) {
-        var entry_path = path.join(dir_path, entry);
-        if (fs.lstatSync(entry_path).isDirectory()) {
-          rimraf(entry_path);
-        } else {
-          fs.unlinkSync(entry_path);
-        }
-      });
-      fs.rmdirSync(dir_path);
-    }
-  };
-
-  let stall = async function(stallTime = 200) {
-    await new Promise(resolve => setTimeout(resolve, stallTime));
-  };
+  let users,
+      dbDir;
 
   before(function () {
-    fs.mkdirSync('testdatabase');
+    if (!fs.existsSync('testdatabase')) {
+      fs.mkdirSync('testdatabase');
+    };
   });
 
   beforeEach(function () {
@@ -61,73 +42,100 @@ describe('Users', function () {
   });
 
   it('should list all users', async function () {
-    testdata.testUsers.forEach(async (user) => await users.registerUser(user));
+    // Arrange
+    for (let i = 0; i < testdata.testUsers.length; i++) {
+      await users.registerUser(testdata.testUsers[i]);
+    };
+    // Act
     let userTestList = await users.listAllUsers();
+    // Assert
     expect(userTestList.length).toEqual(4);
   });
 
   it('should remove user', async function () {
+    // Arrange
     const userId = genRandomString(15);
     const newUser = testdata.testUsers[0];
     newUser._id = userId;
     await users.registerUser(newUser);
-    await users.removeUser(userId);
+    // Act
+    await users.removeUser(newUser);
+    // Assert
     let userTestList = await users.listAllUsers();
     expect(userTestList.length).toEqual(0);
   });
 
   it('should update user', async function () {
+    // Arrange
     const userId = genRandomString(15);
     const newUser = testdata.testUsers[0];
     newUser._id = userId;
     await users.registerUser(newUser);
     let userToUpdate = await users.getUser(userId);
     userToUpdate.username = 'Marianne';
+    // Act
     await users.updateUser(userToUpdate);
+    // Assert
     let updatedUser = await users.getUser(userId);
     expect(updatedUser.username).toEqual(userToUpdate.username);
   });
 
   it('should update password', async function () {
+    // Arrange
     const userId = genRandomString(15);
     const newUser = testdata.testUsers[0];
     newUser._id = userId;
     await users.registerUser(newUser);
     let userToUpdate = await users.getUser(userId);
+    // Act
     await users.setNewPassword(userToUpdate, 'newPassword');
+    // Assert
     userToUpdate = await users.getUser(userId);
     let result = await users.checkPassword(userToUpdate, 'newPassword');
     expect(result).toEqual('Password matches');
   });
 
   it('should add new userdata', async function () {
+    // Arrange
     const userData = testdata.testUserData[0];
+    // Act
     await users.setupUserData(userData);
+    // Assert
     let postedUserData = await users.getUserData(userData._id);
     expect(postedUserData._id).toEqual(userData._id);
   });
 
   it('should list all userdata', async function () {
-    testdata.testUserData.forEach(async (userdata) => await users.setupUserData(userdata));
+    // Arrange
+    for (let i = 0; i < testdata.testUserData.length; i++) {
+      await users.setupUserData(testdata.testUserData[i]);
+    };
+    // Act
     let userDataTestList = await users.listAllUserData();
+    // Assert
     expect(userDataTestList.length).toEqual(4);
   });
 
   it('should remove userdata', async function () {
+    // Arrange
     const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
-    await users.removeUserData(userData._id);
+    // Act
+    await users.removeUserData(userData);
+    // Assert
     let userDataTestList = await users.listAllUserData();
     expect(userDataTestList.length).toEqual(0);
   });
 
   it('should update userdata', async function () {
+    // Arrange
     const userData = testdata.testUserData[0];
     await users.setupUserData(userData);
     let userDataToUpdate = await users.getUserData(userData._id);
     userDataToUpdate.diplayname = 'Marco';
+    // Act
     await users.updateUserData(userDataToUpdate);
-    let userTestList = await users.listAllUserData();
+    // Assert
     let updatedUser = await users.getUserData(userData._id);
     expect(updatedUser.displayname).toEqual(userDataToUpdate.displayname);
   });

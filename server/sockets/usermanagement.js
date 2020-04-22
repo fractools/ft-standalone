@@ -1,7 +1,7 @@
-const logger = require('../lib/logger');
-const Users = require('../lib/users');
-const config = require('../fractools.config');
-const dbPath = config.databasePath;
+const logger = require('../lib/logger'),
+      Users = require('../lib/users'),
+      config = require('../fractools.config'),
+      dbPath = config.databasePath;
 
 const users = new Users(dbPath);
 

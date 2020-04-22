@@ -1,5 +1,5 @@
-const PouchDB = require('../adaptors/pouchAdaptor'),
-      { genRandomString } = require('../lib/tokenizer'),
+const PouchDB = require('pouchdb'),
+      { genRandomString } = require('../lib/tools');
       config = require('../fractools.config'),
       pkg = require('../../package'),
       server = config.remotePouchDB;

@@ -1,7 +1,8 @@
-const PouchDB = require('../adaptors/pouchAdaptor'),
+const PouchDB = require('pouchdb'),
       logger = require('../lib/logger'),
-      { saltHashPassword, genRandomString } = require('../lib/tokenizer'),
+      { saltHashPassword } = require('../lib/tokenizer'),
       { authInit, fetch, putDoc } = require('../lib/genPouch');
+      { genRandomString } = require('../lib/tools');
 
 module.exports = async (socket, io, clients) => {
 

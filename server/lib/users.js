@@ -1,66 +1,48 @@
-const PouchDB = require('pouchdb');
-const Logger = require('./logger');
+const PouchInteractor = require('./pouchInteractor');
 
 let pkg = require('../../package'),
       config = require('../fractools.config');
 
 const genPouch = require('./genPouch');
 const { saltHashPasswordRegister,
-        saltHashPassword,
-        genRandomString } = require('./tokenizer');
+        saltHashPassword } = require('./tokenizer'),
+      { genRandomString } = require('./tools');
 
-let logger, userdb, userDatadb;
-
-let fetch;
+let pouch;
 
 class Users {
   constructor(dbPath) {
-    userdb = new PouchDB(`${dbPath}/user`);
-    userDatadb = new PouchDB(`${dbPath}/userdata`);
-
-    // fetch = genPouch.fetch;
+    pouch = new PouchInteractor(dbPath);
   };
 
   async registerUser(user) {
     const saltPW = saltHashPasswordRegister(user.password);
     const userToPost = { ...user, password: saltPW };
-    let resUser = await userdb.put(userToPost);
-    let fetchUser = await userdb.allDocs({
-      include_docs: true,
-      attachments: false
-    });
+    let resUser = await pouch.postDoc('user', userToPost._id, userToPost);
+    let fetchUser = await pouch.fetch('user');
     return resUser;
   };
 
   async updateUser(user) {
-    let userInDB = await userdb.get(user._id);
-    let resUser = await userdb.put({
-      _id: user._id,
-      _rev: userInDB._rev,
-      ...user
-    });
-    let fetchUser = await userdb.allDocs({
-      include_docs: true,
-      attachments: false
-    });
+    let resUser = await pouch.putDoc('user', user._id, user);
+    let fetchUser = await pouch.fetch('user');
     return resUser;
   };
 
-  async removeUser(id) {
-    let userInDB = await userdb.get(id);
-    let resUser = await userdb.remove(userInDB);
+  async removeUser(user) {
+    let resUser = await pouch.remDoc('user', user);
     return resUser;
   };
 
-  setNewPassword(user, password) {
+  async setNewPassword(user, password) {
     const saltPW = saltHashPasswordRegister(password);
     const userToUpdate = { ...user, password: saltPW };
-    let result = this.updateUser(userToUpdate);
-    return result;
+    let resUser = await this.updateUser(userToUpdate);
+    return resUser;
   };
 
   async checkPassword(user, password) {
-    const userFromDB = await userdb.get(user._id);
+    const userFromDB = await pouch.getDoc('user', user._id);
     const result = saltHashPassword(password, userFromDB.password.salt);
     return await new Promise((resolve, reject) => {
       if (result.passwordHash === user.password.passwordHash) {
@@ -72,56 +54,40 @@ class Users {
   };
 
   async listAllUsers() {
-    let userList = [];
-    let userrow = await userdb.allDocs({ include_docs: true, attachments: false });
-    userList = userrow.rows.map(row => row.doc);
+    let userList = await pouch.getAll('user');
     return userList;
   };
 
   async getUser(id) {
-    let user = await userdb.get(id);
+    let user = await pouch.getDoc('user', id);
     return user;
   };
 
   async setupUserData(userData) {
-    let resUserData = await userDatadb.put(userData);
-    let fetchUser = await userDatadb.allDocs({
-      include_docs: true,
-      attachments: false
-    });
+    let resUserData = await pouch.postDoc('userdata', userData._id, userData);
+    let fetchUserData = await pouch.fetch('userdata');
     return resUserData;
   };
 
   async updateUserData(userData) {
-    let userDataInDB = await userDatadb.get(userData._id);
-    let resUserData = await userDatadb.put({
-      _id: userData._id,
-      _rev: userDataInDB._rev,
-      ...userData
-    });
-    let fetchUserData = await userDatadb.allDocs({
-      include_docs: true,
-      attachments: false
-    });
-    let data = fetchUserData.rows.map(row => row.doc);
+    let resUserData = await pouch.putDoc('userdata', userData._id, userData);
+    let fetchUserData = await pouch.fetch('userdata');
+    return resUserData;
     return resUserData;
   };
 
-  async removeUserData(id) {
-    let userDataInDB = await userDatadb.get(id);
-    let resUserData = await userDatadb.remove(userDataInDB);
+  async removeUserData(userData) {
+    let resUserData = await pouch.remDoc('userdata', userData);
     return resUserData;
   };
 
   async listAllUserData() {
-    let userDataList = [];
-    let userDatarow = await userDatadb.allDocs({ include_docs: true, attachments: false });
-    userDataList = userDatarow.rows.map(row => row.doc);
+    let userDataList = await pouch.getAll('userdata');
     return userDataList;
   };
 
   async getUserData(id) {
-    let userData = await userDatadb.get(id);
+    let userData = await pouch.getDoc('userdata', id);
     return userData;
   };
 };

@@ -1,13 +1,17 @@
 const moment = require('moment'),
       { postDoc, fetch } = require('./genPouch'),
-      { genRandomString } = require('./tokenizer')
-      Stack = require('./stack');
+      { genRandomString } = require('./tools'),
+      PouchInteractor = require('./pouchInteractor'),
+      config = require('../fractools.config'),
+      dbPath = config.databasePath;
 
 moment.locale('de');
 
+let pouch;
+
 class Logger {
-  constructor(){
-    this.Stack = new Stack();
+  constructor(dbPath) {
+    pouch = new PouchInteractor(dbPath);
   };
 
   async createLog(socket, topic, level, msg, client) {
@@ -26,24 +30,12 @@ class Logger {
       socketid: socketid
     };
 
-    let docs = await fetch('logs');
+    let result = await pouch.postDoc('logs', `${log.time}-${genRandomString(3)}`, log);
+
+    let docs = await pouch.fetch('logs');
     if (socket && socket.broadcast) {
       socket.broadcast.emit(`documents`, docs, 'logs');
       socket.emit(`documents`, docs, 'logs');
-    };
-
-    this.Stack.push(log);
-    return this.executeStack();
-  };
-
-  async executeStack() {
-    let current, result;
-    while (current = this.Stack.pop()) {
-      try {
-        result = await postDoc('logs', `${current.time}${genRandomString(3)}`, current);
-      } catch (e) {
-        console.log(e);
-      }
     };
     return result;
   };
@@ -54,4 +46,4 @@ class Logger {
   };
 };
 
-module.exports = new Logger();
+module.exports = new Logger(dbPath);

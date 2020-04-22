@@ -1,9 +1,7 @@
 // Reference: https://ciphertrick.com/salt-hash-passwords-using-nodejs-crypto/
 const crypto = require('crypto');
+const { genRandomString } = require('./tools');
 
-let genRandomString = function(length) {
-  return crypto.randomBytes(Math.ceil(length/2)).toString('hex').slice(0,length);
-};
 
 let sha512 = function(password, salt){
   let hash = crypto.createHmac('sha512', salt);
