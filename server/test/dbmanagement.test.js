@@ -73,27 +73,64 @@ describe('Socket DB-Manager', function () {
     let tempId = genRandomString(15);
     let doc = testdata.simple[0];
     // Act
-    await socket.emit(`send-document`, 'test', doc, tempId, ()=>{});
+    // await socket.emit(`send-document`, 'test', doc, tempId, ()=>{});
+    let socketRequestResult = await new Promise((resolve, reject) => {
+      socket.emit(`send-document`, 'test', doc, tempId, (err, result) => {
+        if (err) return reject(err);
+        return resolve(result);
+      });
+    });
     // Assert
-    await stall();
-    let socketRequestResult = await pouch.getDoc('test', tempId);
-    expect(socketRequestResult.test).toEqual(doc.test);
+    expect(socketRequestResult.ok).toBe(true);
+  });
+
+  it('should update document via socket', async function () {
+    // Arrange
+    let tempId = genRandomString(15);
+    let doc = testdata.simple[0];
+    let updatedDoc = testdata.simple[1];
+    let postedDoc = await pouch.postDoc('test', tempId, doc);
+    // Act
+    let socketRequestResult = await new Promise((resolve, reject) => {
+      socket.emit(`update-document`, 'test', updatedDoc, tempId, postedDoc._rev, (err, result) => {
+        if (err) return reject(err);
+        return resolve(result);
+      });
+    });
+    // Assert
+    expect(socketRequestResult.ok).toBe(true);
+  });
+
+  it('should remove document via socket', async function () {
+    // Arrange
+    let tempId = genRandomString(15);
+    let doc = testdata.simple[0];
+    await pouch.postDoc('test', tempId, doc);
+    let docToRemove = await pouch.getDoc('test', tempId);
+    // Act
+    let socketRequestResult = await new Promise((resolve, reject) => {
+      socket.emit(`remove-document`, 'test', docToRemove, (err, result) => {
+        if (err) return reject(err);
+        return resolve(result);
+      });
+    });
+    // Assert
+    expect(socketRequestResult.ok).toBe(true);
   });
 
   it('should get document via socket', async function () {
     // Arrange
     let tempId = genRandomString(15);
     let doc = testdata.simple[0];
-    // Act
     await pouch.postDoc('test', tempId, doc);
-    let docs = await pouch.fetch('test');
-    // Assert
+    // Act
     let socketRequestResult = await new Promise((resolve, reject) => {
       socket.emit(`get-document`, 'test', tempId, (err, result) => {
         if (err) return reject(err);
         return resolve(result);
       });
     });
+    // Assert
     expect(socketRequestResult.test).toEqual(doc.test);
   });
 

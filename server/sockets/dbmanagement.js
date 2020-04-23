@@ -31,19 +31,6 @@ module.exports = (socket, clients) => {
     };
   });
 
-  // Get Single Document
-  socket.on(`get-document`, async (database, id, fn) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
-    try {
-      pouch.dbCreate(database);
-      let doc = await pouch.getDoc(database, id);
-      fn(null, doc);
-    } catch (err) {
-      console.dir(err);
-      fn(err, null);
-    };
-  });
-
   // Send and Broadcast new Document
   socket.on(`send-document`, async (database, data, id, fn) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}"`);
@@ -124,6 +111,19 @@ module.exports = (socket, clients) => {
       await pouch.replicate(database);
     } catch (err) {
       console.log(err);
+    };
+  });
+
+  // Get Single Document
+  socket.on(`get-document`, async (database, id, fn) => {
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    try {
+      pouch.dbCreate(database);
+      let doc = await pouch.getDoc(database, id);
+      fn(null, doc);
+    } catch (err) {
+      console.dir(err);
+      fn(err, null);
     };
   });
 
