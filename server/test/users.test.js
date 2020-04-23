@@ -1,8 +1,14 @@
 const expect = require('expect');
-const pkg = require('../../package');
-const testdata = require('./testdata/users.testdata');
-const { genRandomString, rimraf, stall } = require('../lib/tools');
 const fs = require('fs');
+
+
+const { genRandomString, rimraf, stall } = require('../lib/tools');
+
+const pkg = require('../../package');
+const config = require('../fractools.config');
+
+const testdata = require('./testdata/users.testdata');
+
 
 describe('Users', function () {
   let users,
@@ -19,6 +25,7 @@ describe('Users', function () {
     const Users = require('../lib/users');
     const ranStr = genRandomString(15);
     dbDir = 'testdatabase/' + ranStr;
+    config.databasePath = dbDir;
     fs.mkdirSync(dbDir);
     users = new Users(dbDir);
   });

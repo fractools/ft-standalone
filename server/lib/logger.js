@@ -1,5 +1,4 @@
 const moment = require('moment'),
-      { postDoc, fetch } = require('./genPouch'),
       { genRandomString } = require('./tools'),
       PouchInteractor = require('./pouchInteractor'),
       config = require('../fractools.config'),
@@ -10,8 +9,8 @@ moment.locale('de');
 let pouch;
 
 class Logger {
-  constructor(dbPath) {
-    pouch = new PouchInteractor(dbPath);
+  constructor() {
+    pouch = new PouchInteractor();
   };
 
   async createLog(socket, topic, level, msg, client) {
@@ -37,6 +36,7 @@ class Logger {
       socket.broadcast.emit(`documents`, docs, 'logs');
       socket.emit(`documents`, docs, 'logs');
     };
+
     return result;
   };
 

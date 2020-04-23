@@ -1,23 +1,20 @@
 const PouchDB = require('pouchdb'),
+      PouchInteractor = require('../lib/pouchInteractor'),
+      pouch = new PouchInteractor(),
       pkg = require('../../package'),
       // Import lib
       logger = require('../lib/logger'),
-      genPouch = require('../lib/genPouch'),
-      // Extract Methods form Lib
-      replicate = genPouch.replicate,
-      fetch = genPouch.fetch,
-      docCount = genPouch.docCount,
-      dbExists = genPouch.dbExists,
       // Define PouchDB-Remote-Server and Database
       server = pkg.remotePouchDB,
       config = require('../fractools.config'),
       dbPath = config.databasePath;
 
 module.exports = (socket, clients) => {
+
   // Fetch Documents Count in Database
   socket.on(`docCount`, async (database, fn) => {
     try {
-      let data = await docCount(database);
+      let data = await pouch.docCount(database);
       fn(null, data);
     } catch (err) {
       fn(err, null);
@@ -26,7 +23,7 @@ module.exports = (socket, clients) => {
 
   socket.on(`dbexists`, async (database, fn) => {
     try {
-      let res = await dbExists(database);
+      let res = await pouch.dbExists(database);
       fn(null, res);
     } catch (err) {
       console.log('err', err);
@@ -34,37 +31,31 @@ module.exports = (socket, clients) => {
     };
   });
 
-  // Fetch Documents to/from Remote
-  socket.on(`last-documents`, async (database, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Fetch Data from "${database}"`);
+  // Get Single Document
+  socket.on(`get-document`, async (database, id, fn) => {
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
     try {
-      let docs = await fetch(database);
-      fn(null, docs);
+      pouch.dbCreate(database);
+      let doc = await pouch.getDoc(database, id);
+      fn(null, doc);
     } catch (err) {
+      console.dir(err);
       fn(err, null);
-    };
-    try {
-      await replicate(database);
-    } catch (err) {
-      console.log(err);
     };
   });
 
   // Send and Broadcast new Document
   socket.on(`send-document`, async (database, data, id, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
-
-
-    let db = new PouchDB(`${dbPath}/${database}`);
-    let doc = {
-      _id: id,
-      ...data
-    };
     try {
-      let response = await db.put(doc);
+      let doc = {
+        _id: id,
+        ...data
+      };
+      let response = await pouch.postDoc(database, id, doc);
       fn(null, response);
-      let docs = await fetch(database);
+      let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
       logger.createLog(socket, 'Documents', 'info', `Add new Data in "${database}"`, client);
@@ -74,7 +65,7 @@ module.exports = (socket, clients) => {
       fn(err, null);
     };
     try {
-      await replicate(database);
+      await pouch.replicate(database);
     } catch (err) {
       console.log(err);
     };
@@ -82,7 +73,7 @@ module.exports = (socket, clients) => {
 
   // Send and Broadcast updated Document
   socket.on(`update-document`, async (database, data, id, rev, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Update Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Update Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
     let db = new PouchDB(`${dbPath}/${database}`);
     let docs;
@@ -93,7 +84,7 @@ module.exports = (socket, clients) => {
         _rev: doc._rev,
         ...doc = data
       });
-      docs = await fetch(database);
+      docs = await pouch.fetch(database);
       fn(null, response);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
@@ -104,7 +95,7 @@ module.exports = (socket, clients) => {
       fn(err, null);
     };
     try {
-      await replicate(database);
+      await pouch.replicate(database);
     } catch (err) {
       console.log(err);
     };
@@ -112,14 +103,14 @@ module.exports = (socket, clients) => {
 
   // Remove and Broadcast removed Document
   socket.on(`remove-document`, async (database, obj, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Remove Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Remove Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
     let db = new PouchDB(`${dbPath}/${database}`);
     let docs;
     try {
       let doc = await db.get(obj._id);
       let response = await db.remove(doc);
-      docs = await fetch(database);
+      docs = await pouch.fetch(database);
       fn(null, response);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
@@ -130,18 +121,33 @@ module.exports = (socket, clients) => {
       fn(err, null);
     };
     try {
-      await replicate(database);
+      await pouch.replicate(database);
     } catch (err) {
       console.log(err);
     };
   });
 
-  // Get Single Document
-  socket.on(`get-document`, async (database, id, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
-    let db = new PouchDB(`${dbPath}/${database}`);
+  // Fetch Documents to/from Remote
+  socket.on(`last-documents`, async (database, fn) => {
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Fetch Data from "${database}"`);
     try {
-      let doc = await db.get(id);
+      let docs = await pouch.fetch(database);
+      fn(null, docs);
+    } catch (err) {
+      fn(err, null);
+    };
+    try {
+      await pouch.replicate(database);
+    } catch (err) {
+      console.log(err);
+    };
+  });
+
+  // Broadcast
+  socket.on(`broadcast`, async (database, data) => {
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    try {
+      socket.broadcast.emit(`documents`, data, database);
       fn(null, doc);
     } catch (err) {
       console.dir(err);
@@ -151,7 +157,7 @@ module.exports = (socket, clients) => {
 
   // Send and Broadcast new Document
   socket.on(`send-db`, async (data, id, fn) => {
-    console.dir(` ######## [ Server Socket ] ######## Add ${data.dbname} in "Databases"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add ${data.dbname} in "Databases"`);
     let client = clients.find(client => client.id === socket.id);
     let db = new PouchDB(`${dbPath}/databases`);
     let doc = {
@@ -161,7 +167,7 @@ module.exports = (socket, clients) => {
     let docs;
     try {
       let response = await db.put(doc);
-      docs = await fetch('databases');
+      docs = await pouch.fetch('databases');
       fn(null, response);
       socket.broadcast.emit(`new-database`, doc);
       socket.emit(`new-database`, doc);
@@ -174,7 +180,7 @@ module.exports = (socket, clients) => {
       fn(err, null);
     };
     try {
-      await replicate('databases');
+      await pouch.replicate('databases');
     } catch (err) {
       console.log(err);
     };
@@ -182,14 +188,14 @@ module.exports = (socket, clients) => {
 
   // Replicate Documents to/from Remote
   socket.on(`replicate-database`, async (database) => {
-    console.dir(` ######## [ Server Socket ] ######## Replicate Data for "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate Data for "${database}"`);
     let db = new PouchDB(`${dbPath}/${database}`);
-    await replicate(db, database);
+    await pouch.replicate(db, database);
   });
 
   // Replicate Documents to/from Remote
   socket.on(`replicateFT`, async (server1, database1, server2, database2) => {
-    console.dir(` ######## [ Server Socket ] ######## Replicate from "${database1}" to "${database2}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate from "${database1}" to "${database2}"`);
     let db = new PouchDB(`${dbPath}/${database1}`);
     await db.replicate.from(`http://${server1}/${database1}`);
     await db.replicate.to(`http://${server2}/${database2}`);

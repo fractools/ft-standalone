@@ -3,7 +3,6 @@ const PouchDB = require('pouchdb'),
       pkg = require('../../package'),
       config = require('../fractools.config'),
       server = config.remotePouchDB;
-      // dbPath = config.databasePath;
 
 if (!server && !pkg.testing) {
   console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
@@ -11,8 +10,8 @@ if (!server && !pkg.testing) {
 
 class PouchInteractor {
 
-  constructor(dbPath) {
-    this.dbPath = dbPath;
+  constructor() {
+    this.dbPath = config.databasePath;
   }
 
   async dbExists(database) {
@@ -29,6 +28,14 @@ class PouchInteractor {
     } finally {
       if (data[0]) return true;
       if (!data[0]) return false;
+    };
+  };
+
+  async dbCreate(database) {
+    try {
+      let db = new PouchDB(`${this.dbPath}/${database}`);
+    } catch (e) {
+      console.log(e);
     };
   };
 
@@ -56,7 +63,7 @@ class PouchInteractor {
       });
       data = alldocs.rows.map(row => row.doc);
     } catch (err) {
-      throw new Error(err);
+      throw new Error(err.message);
     };
     return data;
   };
@@ -142,18 +149,28 @@ class PouchInteractor {
     };
   };
 
+  async destroyDatabase(database) {
+    let db = new PouchDB(`${this.dbPath}/${database}`);
+    try {
+      let result = await db.destroy(database);
+      return result;
+    } catch (e) {
+      throw new Error(e);
+    };
+  };
+
   async dbInit() {
     let databases = [];
     try {
-      await replicate('databases');
-      await replicate('settings');
+      await this.replicate('databases');
+      await this.replicate('settings');
       databases = await fetch('databases'); // TODO Finally
     } catch (err) {
       console.log(err);
     };
     for (let db of databases) {
       try {
-        await replicate(db.dbname);
+        await this.replicate(db.dbname);
       } catch (err) {
         console.log(err);
       };
@@ -163,11 +180,11 @@ class PouchInteractor {
 
   async authInit() {
     try {
-      await replicate('user');
+      await this.replicate('user');
     } catch (e) {
       console.error(e);
     } finally {
-      await fetch('user');
+      await this.fetch('user');
     };
   };
 };

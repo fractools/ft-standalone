@@ -1,5 +1,5 @@
-import socket from '~/plugins/socket.io.js'
-import lists from './data.js'
+import socket from '~/plugins/socket.io.js';
+import lists from './data.js';
 
 export async function fillDefaultState() {
 
@@ -14,7 +14,7 @@ export async function fillDefaultState() {
             if (err) return reject(err);
             return resolve(result);
           });
-        })
+        });
       } catch (e) {
         console.log('dbExists', e);
       }

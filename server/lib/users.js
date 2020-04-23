@@ -3,7 +3,6 @@ const PouchInteractor = require('./pouchInteractor');
 let pkg = require('../../package'),
       config = require('../fractools.config');
 
-const genPouch = require('./genPouch');
 const { saltHashPasswordRegister,
         saltHashPassword } = require('./tokenizer'),
       { genRandomString } = require('./tools');
@@ -11,8 +10,8 @@ const { saltHashPasswordRegister,
 let pouch;
 
 class Users {
-  constructor(dbPath) {
-    pouch = new PouchInteractor(dbPath);
+  constructor() {
+    pouch = new PouchInteractor();
   };
 
   async registerUser(user) {

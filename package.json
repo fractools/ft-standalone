@@ -5,6 +5,7 @@
   "author": "fractools",
   "private": true,
   "backend": "localhost:3000",
+  "socketProtocol": "ws://",
   "config": {
     "nuxt": {
       "host": "localhost",

@@ -1,14 +1,15 @@
 const PouchDB = require('pouchdb'),
       logger = require('../lib/logger'),
       { saltHashPassword } = require('../lib/tokenizer'),
-      { authInit, fetch, putDoc } = require('../lib/genPouch');
+      PouchInteractor = require('../lib/pouchInteractor'),
+      pouch = new PouchInteractor(),
       { genRandomString } = require('../lib/tools');
 
 module.exports = async (socket, io, clients) => {
 
   try {
     // Fetch and Await User-Database for Authentification
-    authInit();
+    pouch.authInit();
   } catch (e) {
     console.error('ERROR: ', e);
 
@@ -21,7 +22,7 @@ module.exports = async (socket, io, clients) => {
       // Fetch User Credencials
       let users;
       try {
-        users = await fetch('user');
+        users = await pouch.fetch('user');
       } catch(err) {
         console.log(err);
       };
@@ -41,7 +42,7 @@ module.exports = async (socket, io, clients) => {
           user = { ...user, token };
 
           try {
-            await putDoc('user', user._id, user);
+            await pouch.putDoc('user', user._id, user);
           } catch (e) {
             console.log(e);
           };
@@ -59,7 +60,7 @@ module.exports = async (socket, io, clients) => {
     socket.on('token', async (token, fn) => {
       let users;
       try {
-        users = await fetch('user');
+        users = await pouch.fetch('user');
       } catch (e) {
         console.log(e);
       };
