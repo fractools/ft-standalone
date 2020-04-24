@@ -1,8 +1,9 @@
 module.exports = {
   host: 'localhost',
   port: '9000',
-  remotePouchDB: '',
+  remoteDatabaseURL: '',
   databasePath: './database',
+  uploadsPath: '/static/uploads/',
   nodemailer: {
     host: '',
     user: '',

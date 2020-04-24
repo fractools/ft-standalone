@@ -10,9 +10,9 @@ module.exports = (app, io) => {
   io.on('connection', (socket) => { // TODO Handshake
     console.dir(` ######## [ Server Socket ] ######## New Client "${socket.id}" connected!`);
 
-    socket.on('clients', function (fn) {
+    socket.on('clients', function (callback) {
       console.dir(` ######## [ Server Socket ] ######## Fetch Clients`);
-      fn(clients);
+      callback(clients);
     });
 
     // Socket for Client to disconnect
@@ -36,7 +36,7 @@ module.exports = (app, io) => {
     require('./usermanagement')(socket, clients);
     // Network Management
     require('./netmanagement')(socket, clients);
-  });  
+  });
 
   console.dir(' ######## [ Server Engine ] ######## Sockets Initialized ');
 };

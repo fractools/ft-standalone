@@ -2,7 +2,7 @@ import Vuex from 'vuex'
 import socket from '~/plugins/socket.io.js'
 import pkg from '../../../package'
 
-const server = pkg.remotePouchDB
+const server = pkg.remoteDatabaseURL
 
 let connectivity = false;
 

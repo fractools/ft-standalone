@@ -3,6 +3,7 @@ const fs = require('fs');
 const express = require('express');
 const socketIO  = require('socket.io');
 const http = require('http');
+const PouchInteractor = require('../lib/pouchInteractor');
 
 const { genRandomString, rimraf, stall } = require('../lib/tools');
 
@@ -12,59 +13,60 @@ const config = require('../fractools.config');
 const testdata = require('./testdata/testdocuments');
 
 describe('Socket DB-Manager', function () {
-  let dbDir, pouch, socket, PouchInteractor, HOST, PORT;
+
+  // Setup testing variables
+  let dbDir, pouch, socket, HOST, PORT;
 
   before(function () {
+    // create database storage directory for testing
     if (!fs.existsSync('testdatabase')) {
       fs.mkdirSync('testdatabase');
     };
 
+    // configure enviroment for testing
     pkg.testing = true;
     PORT = 4000;
     HOST = process.env.baseurl || pkg.config.nuxt.host;
 
-    PouchInteractor = require('../lib/pouchInteractor');
-
+    // Set database path for testing
     const ranStr = genRandomString(15);
     dbDir = 'testdatabase/' + ranStr;
     config.databasePath = dbDir;
 
+    // Instantiate Pouch Pouch Interactor
+    pouch = new PouchInteractor();
+
+    // Setup Test Socket Server
     let app = express();
     let server = http.createServer(app);
     let io = socketIO(server);
-
-    // Setup Test Socket Server
-    let clients = [];
-    io.on('connection', (socket) => { // TODO Handshake
-      socket.on('clients', function (fn) {
-        fn(clients);
-      });
-      socket.on('disconnect', function(){
-        let recentClients = clients.filter(c => c.id != socket.id);
-        clients = recentClients;
-        socket.broadcast.emit(`new-client`, clients);
-      });
+    io.on('connection', (socket) => {
+      let clients = [];
       require('../sockets/dbmanagement')(socket, clients);
     });
     server.listen(PORT, HOST);
   });
 
   beforeEach(function () {
-    pouch = new PouchInteractor();
+    // Setup Test Socket Client
     const io = require('socket.io-client');
     socket = io.connect(`${pkg.socketProtocol}${HOST}:${PORT}/`);
+
+    // create database storage directory for testing
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir);
     };
   });
 
   afterEach(async function () {
-    await stall();
+    await stall(); // wait fo finish all db interaction
+    // Destroy testing database
     await pouch.destroyDatabase('test');
   });
 
   after(async function () {
-    await stall(25);
+    await stall(25); // wait fo finish all db interaction
+    // Delete testing database directory
     rimraf('testdatabase');
   });
 

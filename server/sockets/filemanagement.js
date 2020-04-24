@@ -1,7 +1,9 @@
 const socketStream = require('socket.io-stream'),
       logger = require('../lib/logger'),
-      fs = require('fs')
-      disk = require('diskusage');
+      fs = require('fs'),
+      disk = require('diskusage'),
+      config = require('../fractools.config'),
+      uploadPath = config.uploadPath;
 
 module.exports = (socket, clients) => {
 
@@ -9,7 +11,7 @@ module.exports = (socket, clients) => {
   socketStream(socket).on('fileupload', (stream, data) => {
     console.dir(` ######## [ Server Fileserver ] ######## Upload File `);
     let filename = data.name
-        destination = global.__basedir + '/static/uploads/';
+        destination = global.__basedir + uploadPath;
     // Check commited Path
     if (data.path) {
       destination = destination + data.path + '/';

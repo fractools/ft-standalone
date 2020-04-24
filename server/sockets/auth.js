@@ -1,5 +1,4 @@
-const PouchDB = require('pouchdb'),
-      logger = require('../lib/logger'),
+const logger = require('../lib/logger'),
       { saltHashPassword } = require('../lib/tokenizer'),
       PouchInteractor = require('../lib/pouchInteractor'),
       pouch = new PouchInteractor(),

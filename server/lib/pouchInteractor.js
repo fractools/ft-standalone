@@ -2,7 +2,7 @@ const PouchDB = require('pouchdb'),
       { genRandomString } = require('./tools'),
       pkg = require('../../package'),
       config = require('../fractools.config'),
-      server = config.remotePouchDB;
+      server = config.remoteDatabaseURL;
 
 if (!server && !pkg.testing) {
   console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
@@ -36,20 +36,6 @@ class PouchInteractor {
       let db = new PouchDB(`${this.dbPath}/${database}`);
     } catch (e) {
       console.log(e);
-    };
-  };
-
-  async replicate(database) {
-    try {
-      if (server) {
-        let db = new PouchDB(`${this.dbPath}/${database}`);
-        await db.replicate.to(`http://${server}/${database}`, { live: false, retry: false });
-        await db.replicate.from(`http://${server}/${database}`, { live: false, retry: false });
-        console.dir(` ######## [ Server Database ] ########  ${database} Replicated`);
-      };
-    } catch (err) {
-      console.dir(` ######## [ Server Database ] ########  ${database} NOT Replicated!`);
-      throw new Error(err.message);
     };
   };
 
@@ -146,6 +132,36 @@ class PouchInteractor {
       };
     } catch (err) {
       console.log(err);
+    };
+  };
+
+  async replicate(database) {
+    try {
+      if (server) {
+        let db = new PouchDB(`${this.dbPath}/${database}`);
+        await db.replicate.to(`http://${server}/${database}`, { live: false, retry: false });
+        await db.replicate.from(`http://${server}/${database}`, { live: false, retry: false });
+        console.dir(` ######## [ Server Database ] ########  ${database} Replicated`);
+      };
+    } catch (err) {
+      console.dir(` ######## [ Server Database ] ########  ${database} NOT Replicated!`);
+      throw new Error(err.message);
+    };
+  };
+
+  async replicateRemote(server1, database1, server2, database2) {
+    try {
+      if (server) {
+        let db = new PouchDB(`${dbPath}/${database1}`);
+        await db.replicate.from(`http://${server1}/${database1}`);
+        await db.replicate.to(`http://${server2}/${database2}`);
+        let db2 = new PouchDB(`${dbPath}/${database2}`);
+        await db2.replicate.from(`http://${server2}/${database2}`);
+        console.dir(` ######## [ Server Database ] ########  ${database} Replicated to Remote`);
+      };
+    } catch (err) {
+      console.dir(` ######## [ Server Database ] ########  ${database} NOT Replicated!`);
+      throw new Error(err.message);
     };
   };
 

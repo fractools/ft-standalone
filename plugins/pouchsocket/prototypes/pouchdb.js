@@ -3,7 +3,7 @@ import socket from '~/plugins/socket.io.js'
 import { genid } from '../lib/idgenerator'
 import pkg from '~/package'
 
-const server = pkg.remotePouchDB;
+const server = pkg.remoteDatabaseURL;
 
 
 // Fetch AllDocs from PouchDB
