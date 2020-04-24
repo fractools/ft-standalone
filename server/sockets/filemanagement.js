@@ -20,13 +20,13 @@ module.exports = (socket, clients) => {
         fs.mkdirSync(destination);
       };
     };
-    // Write Data via Stream onto Path
+    // Write Data via Stream to Path
     stream.pipe(fs.createWriteStream(destination + filename)); // TODO Add Option 'Replace File'
   });
 
   // Remove File
   socket.on('removeFile', (path, filename, username, fn) => {
-    let dest = global.__basedir + '/static/uploads/', // TODO Fix Path
+    let dest = global.__basedir + uploadPath,
         socketid = socket.id,
         client = { user: username, id: socketid };
 

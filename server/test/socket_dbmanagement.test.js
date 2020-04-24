@@ -3,7 +3,6 @@ const fs = require('fs');
 const express = require('express');
 const socketIO  = require('socket.io');
 const http = require('http');
-const PouchInteractor = require('../lib/pouchInteractor');
 
 const { genRandomString, rimraf, stall } = require('../lib/tools');
 
@@ -15,7 +14,7 @@ const testdata = require('./testdata/testdocuments');
 describe('Socket DB-Manager', function () {
 
   // Setup testing variables
-  let dbDir, pouch, socket, HOST, PORT;
+  let dbDir, pouch, socket, HOST, PORT, PouchInteractor;
 
   before(function () {
     // create database storage directory for testing
@@ -27,16 +26,20 @@ describe('Socket DB-Manager', function () {
     pkg.testing = true;
     PORT = 4000;
     HOST = process.env.baseurl || pkg.config.nuxt.host;
+  });
 
+  beforeEach(function () {
     // Set database path for testing
     const ranStr = genRandomString(15);
     dbDir = 'testdatabase/' + ranStr;
     config.databasePath = dbDir;
 
-    // Instantiate Pouch Pouch Interactor
+    // Instantiate Pouch Interactor
+    PouchInteractor = require('../lib/pouchInteractor');
     pouch = new PouchInteractor();
 
     // Setup Test Socket Server
+    let nextPort = PORT++;
     let app = express();
     let server = http.createServer(app);
     let io = socketIO(server);
@@ -44,29 +47,17 @@ describe('Socket DB-Manager', function () {
       let clients = [];
       require('../sockets/dbmanagement')(socket, clients);
     });
-    server.listen(PORT, HOST);
-  });
+    server.listen(nextPort, HOST);
 
-  beforeEach(function () {
     // Setup Test Socket Client
-    const io = require('socket.io-client');
-    socket = io.connect(`${pkg.socketProtocol}${HOST}:${PORT}/`);
+    const ioClient = require('socket.io-client');
+    socket = ioClient.connect(`${pkg.socketProtocol}${HOST}:${nextPort}/`);
 
-    // create database storage directory for testing
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir);
-    };
-  });
-
-  afterEach(async function () {
-    await stall(); // wait fo finish all db interaction
-    // Destroy testing database
-    await pouch.destroyDatabase('test');
+    fs.mkdirSync(dbDir);
   });
 
   after(async function () {
-    await stall(25); // wait fo finish all db interaction
-    // Delete testing database directory
+    await stall(25);
     rimraf('testdatabase');
   });
 

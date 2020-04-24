@@ -1,42 +1,20 @@
 const PouchInteractor = require('../lib/pouchInteractor'),
-      pouch = new PouchInteractor(),
       pkg = require('../../package'),
-      // Import lib
       logger = require('../lib/logger');
 
 module.exports = (socket, clients) => {
-
-  // Fetch Documents Count in Database
-  socket.on(`docCount`, async (database, callback) => {
-    try {
-      let data = await pouch.docCount(database);
-      callback(null, data);
-    } catch (err) {
-      callback(err, null);
-    };
-  });
-
-  socket.on(`dbexists`, async (database, callback) => {
-    try {
-      let res = await pouch.dbExists(database);
-      callback(null, res);
-    } catch (err) {
-      console.log('err', err);
-      callback(err, null);
-    };
-  });
 
   // Send and Broadcast new Document
   socket.on(`send-document`, async (database, data, id, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
+    let pouch = new PouchInteractor();
     try {
-      let doc = {
-        _id: id,
-        ...data
-      };
+      // Create and Post Document
+      let doc = { _id: id, ...data };
       let response = await pouch.postDoc(database, id, doc);
       callback(null, response);
+      // Refresh and Broadcast Database State to all Clients
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
@@ -57,9 +35,12 @@ module.exports = (socket, clients) => {
   socket.on(`update-document`, async (database, data, id, rev, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Update Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
+    let pouch = new PouchInteractor();
     try {
+      // Update Document
       let response = await pouch.putDoc(database, id, data);
       callback(null, response);
+      // Refresh and Broadcast Database State to all Clients
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
@@ -80,9 +61,12 @@ module.exports = (socket, clients) => {
   socket.on(`remove-document`, async (database, obj, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Remove Data in "${database}"`);
     let client = clients.find(client => client.id === socket.id);
+    let pouch = new PouchInteractor();
     try {
+      // Remove Document
       let response = await pouch.remDoc(database, obj);
       callback(null, response);
+      // Refresh and Broadcast Database State to all Clients
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
@@ -102,8 +86,8 @@ module.exports = (socket, clients) => {
   // Get Single Document
   socket.on(`get-document`, async (database, id, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    let pouch = new PouchInteractor();
     try {
-      pouch.dbCreate(database);
       let doc = await pouch.getDoc(database, id);
       callback(null, doc);
     } catch (err) {
@@ -115,6 +99,7 @@ module.exports = (socket, clients) => {
   // Fetch Documents to/from Remote
   socket.on(`last-documents`, async (database, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Fetch Data from "${database}"`);
+    let pouch = new PouchInteractor();
     try {
       let docs = await pouch.fetch(database);
       callback(null, docs);
@@ -128,9 +113,33 @@ module.exports = (socket, clients) => {
     };
   });
 
+  // Fetch Documents Count in Database
+  socket.on(`docCount`, async (database, callback) => {
+    let pouch = new PouchInteractor();
+    try {
+      let data = await pouch.docCount(database);
+      callback(null, data);
+    } catch (err) {
+      callback(err, null);
+    };
+  });
+
+  // Check if database exists and is not empty
+  socket.on(`dbexists`, async (database, callback) => {
+    let pouch = new PouchInteractor();
+    try {
+      let res = await pouch.dbExists(database);
+      callback(null, res);
+    } catch (err) {
+      console.log('err', err);
+      callback(err, null);
+    };
+  });
+
   // Broadcast
   socket.on(`broadcast`, async (database, data) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    let pouch = new PouchInteractor();
     try {
       socket.broadcast.emit(`documents`, data, database);
       callback(null, doc);
@@ -143,6 +152,7 @@ module.exports = (socket, clients) => {
   // Send and Broadcast new Document
   socket.on(`send-db`, async (data, id, callback) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add ${data.dbname} in "Databases"`);
+    let pouch = new PouchInteractor();
     let client = clients.find(client => client.id === socket.id);
     let doc = {
       _id: id,
@@ -173,12 +183,14 @@ module.exports = (socket, clients) => {
   // Replicate Documents to/from Remote
   socket.on(`replicate-database`, async (database) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate Data for "${database}"`);
+    let pouch = new PouchInteractor();
     await pouch.replicate(database);
   });
 
   // Replicate Documents to/from Remote
   socket.on(`replicateFT`, async (server1, database1, server2, database2) => {
     if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate from "${database1}" to "${database2}"`);
+    let pouch = new PouchInteractor();
     await pouch.replicateRemote(server1, database1, server2, database2);
   });
 };

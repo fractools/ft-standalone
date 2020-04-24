@@ -8,7 +8,7 @@ module.exports = async (socket, io, clients) => {
 
   try {
     // Fetch and Await User-Database for Authentification
-    pouch.authInit();
+    await pouch.authInit();
   } catch (e) {
     console.error('ERROR: ', e);
 

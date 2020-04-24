@@ -13,6 +13,9 @@ module.exports = (socket, clients) => {
       let userResult = await users.registerUser(fullUser.user);
       let userDataResult = await users.setupUserData(fullUser.userData);
       if (userResult.ok && userDataResult.ok) {
+        let docs = await pouch.fetch('user');
+        socket.broadcast.emit(`documents`, docs, 'user');
+        socket.emit(`documents`, docs, 'user');
         logger.createLog(socket, 'User Management', 'info', `Register User "${fullUser.user.username}"`, client);
         fn(null, 'Registered');
       };
@@ -28,6 +31,9 @@ module.exports = (socket, clients) => {
     try {
       let userResult = await users.updateUser(user);
       if (userResult.ok) {
+        let docs = await pouch.fetch('user');
+        socket.broadcast.emit(`documents`, docs, 'user');
+        socket.emit(`documents`, docs, 'user');
         logger.createLog(socket, 'User Management', 'info', `Update user "${user.username}"`, client);
         fn(null, true);
       };
@@ -42,6 +48,9 @@ module.exports = (socket, clients) => {
     try {
       let userDataResult = await users.updateUserData(userData);
       if (userDataResult.ok) {
+        let docs = await pouch.fetch('userdata');
+        socket.broadcast.emit(`documents`, docs, 'userdata');
+        socket.emit(`documents`, docs, 'userdata');
         logger.createLog(socket, 'User Management', 'info', `Update userdata for "${userData._id}"`, client);
         fn(null, true);
       };
@@ -56,6 +65,9 @@ module.exports = (socket, clients) => {
     try {
       let userResult = await users.removeUser(id);
       if (userResult.ok) {
+        let docs = await pouch.fetch('user');
+        socket.broadcast.emit(`documents`, docs, 'user');
+        socket.emit(`documents`, docs, 'user');
         logger.createLog(socket, 'User Management', 'info', `Remove user "${id}"`, client);
         fn(null, true);
       };
@@ -70,6 +82,9 @@ module.exports = (socket, clients) => {
     try {
       let userDataResult = await users.removeUserData(id);
       if (userDataResult.ok) {
+        let docs = await pouch.fetch('userdata');
+        socket.broadcast.emit(`documents`, docs, 'userdata');
+        socket.emit(`documents`, docs, 'userdata');
         logger.createLog(socket, 'User Management', 'info', `Remove userdata for "${id}"`, client);
         fn(null, true);
       };
@@ -84,6 +99,9 @@ module.exports = (socket, clients) => {
     try {
       let userResult = await users.setNewPassword(user, password);
       if (userResult.ok) {
+        let docs = await pouch.fetch('user');
+        socket.broadcast.emit(`documents`, docs, 'user');
+        socket.emit(`documents`, docs, 'user');
         logger.createLog(socket, 'User Management', 'info', `New Password for user "${user.username}"`, client);
         fn(null, 'Registered');
       };
