@@ -13,11 +13,6 @@ export default {
     {
       _id: new Date() + Math.random().toString(36).substr(2, 9),
       author: 'InitImport',
-      dbname: 'user'
-    },
-    {
-      _id: new Date() + Math.random().toString(36).substr(2, 9),
-      author: 'InitImport',
       dbname: 'userdata'
     },
     {
@@ -29,5 +24,6 @@ export default {
   logs: [],
   user: [],
   userdata: [],
-  htmlsnips: []
+  userposts: [],
+  filesdb: []
 };

@@ -27,4 +27,20 @@ let stall = async function(stallTime = 200) {
   await new Promise(resolve => setTimeout(resolve, stallTime));
 };
 
-module.exports = { genRandomString, rimraf, stall };
+// Read key from cookies
+let readCookie = function (key, cookies) {
+  let fullKey = key + "=";
+  let seperatedCookies = cookies.split(';');
+  for (let i = 0; i < seperatedCookies.length; i++) {
+    let cookie = seperatedCookies[i];
+    while (cookie.charAt(0) === ' ') {
+      cookie = cookie.substring(1, cookie.length);
+    }
+    if (cookie.indexOf(fullKey) === 0) {
+      return cookie.substring(fullKey.length, cookie.length);
+    }
+  }
+  return null;
+}
+
+module.exports = { genRandomString, rimraf, stall, readCookie };
