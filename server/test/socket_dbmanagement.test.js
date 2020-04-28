@@ -66,7 +66,6 @@ describe('Socket DB-Manager', function () {
     let tempId = genRandomString(15);
     let doc = testdata.simple[0];
     // Act
-    // await socket.emit(`send-document`, 'test', doc, tempId, ()=>{});
     let socketRequestResult = await new Promise((resolve, reject) => {
       socket.emit(`send-document`, 'test', doc, tempId, (err, result) => {
         if (err) return reject(err);
