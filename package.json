@@ -6,6 +6,7 @@
   "private": true,
   "backend": "localhost:3000",
   "socketProtocol": "ws://",
+  "socketAuthToken": "",
   "config": {
     "nuxt": {
       "host": "localhost",

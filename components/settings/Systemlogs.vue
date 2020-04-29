@@ -78,7 +78,7 @@ const columns = [
       title: 'User',
       dataIndex: 'user',
       filters: [],
-      onFilter: (value, record) => record.level.indexOf(value) === 0,
+      onFilter: (value, record) => record.user.indexOf(value) === 0,
     },
     {
       title: 'Socket ID',
@@ -97,11 +97,11 @@ export default {
     }
   },
   async mounted() {
-    let user = await this.$fetchAllDocs('user');
-    for (let u of user) {
+    const uniqueLogUsers = [...new Set(this.logs.map(item => item.user))];
+    for (let user of uniqueLogUsers) {
       this.columns[4].filters.push({
-        text: u.username,
-        value: u.username,
+        text: user,
+        value: user,
       });
     };
   },

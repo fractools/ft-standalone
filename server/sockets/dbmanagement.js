@@ -6,7 +6,7 @@ module.exports = (socket, clients) => {
 
   // Send and Broadcast new Document
   socket.on(`send-document`, async (database, data, id, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add new Data in "${database}" `);
     let client = clients.find(client => client.id === socket.id);
     let pouch = new PouchInteractor();
     try {
@@ -18,10 +18,10 @@ module.exports = (socket, clients) => {
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger.createLog(socket, 'Documents', 'info', `Add new Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Add new Data in "${database}" `, client);
     } catch (err) {
       console.log(err);
-      logger.createLog(socket, 'Documents', 'error', `Error adding new Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error adding new Data in "${database}": ${err} `, client);
       callback(err, null);
     };
     try {
@@ -33,7 +33,7 @@ module.exports = (socket, clients) => {
 
   // Send and Broadcast updated Document
   socket.on(`update-document`, async (database, data, id, rev, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Update Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Update Data in "${database}" `);
     let client = clients.find(client => client.id === socket.id);
     let pouch = new PouchInteractor();
     try {
@@ -44,10 +44,10 @@ module.exports = (socket, clients) => {
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger.createLog(socket, 'Documents', 'info', `Update Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Update Data in "${database}" `, client);
     } catch (err) {
       console.dir(err);
-      logger.createLog(socket, 'Documents', 'error', `Error Updating Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Updating Data in "${database}": ${err} `, client);
       callback(err, null);
     };
     try {
@@ -59,7 +59,7 @@ module.exports = (socket, clients) => {
 
   // Remove and Broadcast removed Document
   socket.on(`remove-document`, async (database, obj, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Remove Data in "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Remove Data in "${database}" `);
     let client = clients.find(client => client.id === socket.id);
     let pouch = new PouchInteractor();
     try {
@@ -70,10 +70,10 @@ module.exports = (socket, clients) => {
       let docs = await pouch.fetch(database);
       socket.broadcast.emit(`documents`, docs, database);
       socket.emit(`documents`, docs, database);
-      logger.createLog(socket, 'Documents', 'info', `Remove Data in "${database}"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Remove Data in "${database}" `, client);
     } catch (err) {
       console.dir(err);
-      logger.createLog(socket, 'Documents', 'error', `Error Removing Data in "${database}": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Removing Data in "${database}": ${err} `, client);
       callback(err, null);
     };
     try {
@@ -85,7 +85,7 @@ module.exports = (socket, clients) => {
 
   // Get Single Document
   socket.on(`get-document`, async (database, id, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}" `);
     let pouch = new PouchInteractor();
     try {
       let doc = await pouch.getDoc(database, id);
@@ -98,7 +98,7 @@ module.exports = (socket, clients) => {
 
   // Fetch Documents to/from Remote
   socket.on(`last-documents`, async (database, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Fetch Data from "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Fetch Data from "${database}" `);
     let pouch = new PouchInteractor();
     try {
       let docs = await pouch.fetch(database);
@@ -138,7 +138,7 @@ module.exports = (socket, clients) => {
 
   // Broadcast
   socket.on(`broadcast`, async (database, data) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Get Single Doc from "${database}" `);
     let pouch = new PouchInteractor();
     try {
       socket.broadcast.emit(`documents`, data, database);
@@ -151,7 +151,7 @@ module.exports = (socket, clients) => {
 
   // Send and Broadcast new Document
   socket.on(`send-db`, async (data, id, callback) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add ${data.dbname} in "Databases"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Add ${data.dbname} in "Databases" `);
     let pouch = new PouchInteractor();
     let client = clients.find(client => client.id === socket.id);
     let doc = {
@@ -167,10 +167,10 @@ module.exports = (socket, clients) => {
       socket.emit(`new-database`, doc);
       socket.broadcast.emit(`documents`, docs, 'databases');
       socket.emit(`documents`, docs, 'databases');
-      logger.createLog(socket, 'Documents', 'info', `Add "${data.dbname}" into "Databases"`, client);
+      logger.createLog(socket, 'Documents', 'info', `Add "${data.dbname}" into "Databases" `, client);
     } catch (err) {
       console.log(err);
-      logger.createLog(socket, 'Documents', 'error', `Error Putting "${data.dbname}" in "Databases": ${err}`, client);
+      logger.createLog(socket, 'Documents', 'error', `Error Putting "${data.dbname}" in "Databases": ${err} `, client);
       callback(err, null);
     };
     try {
@@ -182,14 +182,14 @@ module.exports = (socket, clients) => {
 
   // Replicate Documents to/from Remote
   socket.on(`replicate-database`, async (database) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate Data for "${database}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate Data for "${database}" `);
     let pouch = new PouchInteractor();
     await pouch.replicate(database);
   });
 
   // Replicate Documents to/from Remote
   socket.on(`replicateFT`, async (server1, database1, server2, database2) => {
-    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate from "${database1}" to "${database2}"`);
+    if (!pkg.testing) console.dir(` ######## [ Server Socket ] ######## Replicate from "${database1}" to "${database2}" `);
     let pouch = new PouchInteractor();
     await pouch.replicateRemote(server1, database1, server2, database2);
   });

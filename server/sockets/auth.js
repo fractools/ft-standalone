@@ -15,7 +15,6 @@ module.exports = async (socket, io, clients) => {
   } finally {
 
     socket.on(`login`, async (data, fn) => {
-      console.dir(` ######## [ Server Engine ] ######## "${data.username}" logs in `);
       let client = { user: data.username, id: socket.id };
 
       // Fetch User Credencials
@@ -47,13 +46,16 @@ module.exports = async (socket, io, clients) => {
           };
 
           logger.createLog(socket, 'Authentification', 'info', `Login by "${data.username}"`, client);
+          console.dir(` ######## [ Server Engine ] ######## Successful Login  by "${data.username}" `);
           return fn(null, { username: user.username, role: user.role, _id: user._id, token });
         };
         logger.createLog(socket, 'Authentification', 'error', `Wrong password by "${data.username}"`, client);
-        return fn({ message: 'Wrong Credentials' }, null);
+        console.dir(` ######## [ Server Engine ] ######## Failed Login Request "${data.username}": Wrong Password! `);
+        return fn({ message: 'Wrong Password' }, null);
       };
       logger.createLog(socket, 'Authentification', 'error', `User "${data.username}" not found`, client);
-      return fn({ message: 'Wrong Credentials' }, null);
+      console.dir(` ######## [ Server Engine ] ######## Failed Login Request "${data.username}": User not found! `);
+      return fn({ message: 'User not found' }, null);
     });
 
     socket.on('token', async (token, fn) => {

@@ -5,7 +5,7 @@ const PouchDB = require('pouchdb'),
       server = config.remoteDatabaseURL;
 
 if (!server && !pkg.testing) {
-  console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off.`);
+  console.dir(` ######## [ Server Database ] ########  No Remote Server. Replication off. `);
 };
 
 class PouchInteractor {

@@ -1,27 +1,32 @@
 const pkg = require('../../package');
+const config = require('../fractools.config');
 
 module.exports = (app, io) => {
 
   // Authentification Middleware
-  // io.use(async function(socket, next) {
-  //   require('../lib/authentification')(socket, next);
-  // });
+  io.use(async function(socket, next) {
+    if (socket.handshake.query.socketAuthToken === config.socketAuthToken) {
+      console.dir(' ######## [ Server Socket ] ######## Authorized Client connected! ');
+      return next();
+    }
+    next(new Error('No valid Token!'));
+  });
 
   // Connected Clients List
   let clients = [];
 
   // Socket for Client to connect with Node
   io.on('connection', (socket) => { // TODO Handshake
-    console.dir(` ######## [ Server Socket ] ######## New Client "${socket.id}" connected!`);
+    console.dir(` ######## [ Server Socket ] ######## New Client "${socket.id}" connected! `);
 
     socket.on('clients', function (callback) {
-      console.dir(` ######## [ Server Socket ] ######## Fetch Clients`);
+      console.dir(` ######## [ Server Socket ] ######## Fetch Clients `);
       callback(clients);
     });
 
     // Socket for Client to disconnect
     socket.on('disconnect', function(){
-      console.dir(` ######## [ Server Socket ] ######## Client "${socket.id}" disconnected!`);
+      console.dir(` ######## [ Server Socket ] ######## Client "${socket.id}" disconnected! `);
 
       let recentClients = clients.filter(c => c.id != socket.id);
       clients = recentClients;

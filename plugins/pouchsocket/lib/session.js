@@ -28,7 +28,7 @@ export function socketSession ({ store }) {
   });
 
   socket.on('error', (err) => {
-    console.log(` ######## [ Client Socket ] ########  Error detected ${err}`);
+    console.log(` ######## [ Client Socket ] ########  Error detected: ${err}`);
   });
 
   socket.on(`new-document`, async (docs) => {

@@ -64,7 +64,7 @@ export default {
             user = data;
           } catch (e) {
             // TODO Wrong Token handling
-            console.log(e);
+            console.dir(` ######## [ Client Socket ] ######## ${e.message} `);
           }
         }
       }
@@ -80,7 +80,7 @@ export default {
           });
         } catch (e) {
           if (e === 'No User exists') return commit('INIT_USER', true);
-          console.log(e);
+          console.dir(` ######## [ Client Socket ] ######## ${e.message} `);
         };
       };
     } else {
@@ -105,7 +105,7 @@ export default {
       if (error.response && error.response.status === 401) {
         throw new Error('Nutzername oder Password ist falsch!')
       }
-      console.log(error)
+      console.dir(` ######## [ Client Socket ] ######## ${error.message} `);
       throw error
     }
   },

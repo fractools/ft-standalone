@@ -57,8 +57,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import io from 'socket.io-client';
-import pkg from '~/package';
 
 export default {
   layout: 'login',
@@ -76,18 +74,6 @@ export default {
     }
   },
   methods: {
-    async socketLogin() {
-      const socket = await io.connect(`ws://${pkg.backend}/`,  { query: { username: this.username, password: this.password } });
-      console.log(socket);
-      await this.$store.dispatch('login', {
-        username: this.username.toLowerCase(),
-        password: this.password
-      });
-      if (socket) {
-        await this.$router.push('/');
-        this.$pushClient(this.username);
-      }
-    },
     async login() {
       try {
         await this.$store.dispatch('login', {
