@@ -1,7 +1,11 @@
-const logger = require('../lib/logger'),
-      pkg = require('../../package');
+const pkg = require('../../package');
 
 module.exports = (app, io) => {
+
+  // Authentification Middleware
+  // io.use(async function(socket, next) {
+  //   require('../lib/authentification')(socket, next);
+  // });
 
   // Connected Clients List
   let clients = [];
