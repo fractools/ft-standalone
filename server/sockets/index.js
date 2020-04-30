@@ -1,12 +1,13 @@
 const pkg = require('../../package');
 const config = require('../fractools.config');
+const secret = require('../serverSecret');
 
 module.exports = (app, io) => {
 
   // Authentification Middleware
   io.use(async function(socket, next) {
-    if (socket.handshake.query.socketAuthToken === config.socketAuthToken) {
-      console.dir(' ######## [ Server Socket ] ######## Authorized Client connected! ');
+    if (socket.handshake.query.socketAuthToken === secret.socketAuthToken) {
+      console.dir(' ######## [ Server Socket ] ######## Authorized Frontend connected! ');
       return next();
     }
     next(new Error('No valid Token!'));

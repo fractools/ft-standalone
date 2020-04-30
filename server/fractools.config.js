@@ -4,7 +4,6 @@ module.exports = {
   remoteDatabaseURL: '',
   databasePath: './database',
   uploadsPath: '/static/uploads/',
-  socketAuthToken: '',
   nodemailer: {
     host: '',
     user: '',
