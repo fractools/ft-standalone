@@ -5,7 +5,7 @@ const secret = require('../serverSecret');
 module.exports = (app, io) => {
 
   // Authentification Middleware
-  io.use(async function(socket, next) {
+  io.use(function(socket, next) {
     if (socket.handshake.query.socketAuthToken === secret.socketAuthToken) {
       console.dir(' ######## [ Server Socket ] ######## Authorized Frontend connected! ');
       return next();
@@ -17,7 +17,7 @@ module.exports = (app, io) => {
   let clients = [];
 
   // Socket for Client to connect with Node
-  io.on('connection', (socket) => { // TODO Handshake
+  io.on('connection', (socket) => {
     console.dir(` ######## [ Server Socket ] ######## New Client "${socket.id}" connected! `);
 
     socket.on('clients', function (callback) {

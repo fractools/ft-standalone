@@ -50,15 +50,12 @@ let auth = async function (socket, next) {
 
         logger.createLog(socket, 'Authentification', 'info', `Login by "${socket.handshake.query.password}"`, client);
         next();
-        // return fn(null, { username: user.username, role: user.role, _id: user._id, token });
       };
       logger.createLog(socket, 'Authentification', 'error', `Wrong password by "${socket.handshake.query.password}"`, client);
       next(new Error('Wrong password!'));
-      // return fn({ message: 'Wrong Credentials' }, null);
     };
     logger.createLog(socket, 'Authentification', 'error', `User "${socket.handshake.query.password}" not found`, client);
     next(new Error('User not found!'));
-    // return fn({ message: 'Wrong Credentials' }, null);
   }
 }
 
