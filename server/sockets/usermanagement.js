@@ -1,7 +1,8 @@
 const logger = require('../lib/logger'),
       Users = require('../lib/users'),
       config = require('../fractools.config'),
-      dbPath = config.databasePath;
+      dbPath = config.databasePath,
+      PouchInteractor = require('../lib/pouchInteractor');
 
 const users = new Users(dbPath);
 
@@ -10,6 +11,7 @@ module.exports = (socket, clients) => {
   socket.on(`register`, async (fullUser, fn) => {
     let client = clients.find(client => client.id === socket.id);
     try {
+      const pouch = new PouchInteractor();
       let userResult = await users.registerUser(fullUser.user);
       let userDataResult = await users.setupUserData(fullUser.userData);
       if (userResult.ok && userDataResult.ok) {
@@ -29,6 +31,7 @@ module.exports = (socket, clients) => {
   socket.on('updateuser', async (user, fn) => {
     let client = clients.find(client => client.id === socket.id);
     try {
+      const pouch = new PouchInteractor();
       let userResult = await users.updateUser(user);
       if (userResult.ok) {
         let docs = await pouch.fetch('user');
@@ -46,6 +49,7 @@ module.exports = (socket, clients) => {
   socket.on('updateuserdata', async (userData, fn) => {
     let client = clients.find(client => client.id === socket.id);
     try {
+      const pouch = new PouchInteractor();
       let userDataResult = await users.updateUserData(userData);
       if (userDataResult.ok) {
         let docs = await pouch.fetch('userdata');
@@ -63,6 +67,7 @@ module.exports = (socket, clients) => {
   socket.on('removeuser', async (id, fn) => {
     let client = clients.find(client => client.id === socket.id)
     try {
+      const pouch = new PouchInteractor();
       let userResult = await users.removeUser(id);
       if (userResult.ok) {
         let docs = await pouch.fetch('user');
@@ -80,6 +85,7 @@ module.exports = (socket, clients) => {
   socket.on('removeuserdata', async (id, fn) => {
     let client = clients.find(client => client.id === socket.id)
     try {
+      const pouch = new PouchInteractor();
       let userDataResult = await users.removeUserData(id);
       if (userDataResult.ok) {
         let docs = await pouch.fetch('userdata');
@@ -97,6 +103,7 @@ module.exports = (socket, clients) => {
   socket.on(`newpassword`, async (user, password, fn) => {
     let client = clients.find(client => client.id === socket.id)
     try {
+      const pouch = new PouchInteractor();
       let userResult = await users.setNewPassword(user, password);
       if (userResult.ok) {
         let docs = await pouch.fetch('user');
