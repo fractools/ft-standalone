@@ -160,7 +160,7 @@ module.exports = (socket, clients) => {
     };
     let docs;
     try {
-      let response = await pouch.putDoc(database, doc);
+      let response = await pouch.postDoc('databases', id, doc);
       docs = await pouch.fetch('databases');
       callback(null, response);
       socket.broadcast.emit(`new-database`, doc);
