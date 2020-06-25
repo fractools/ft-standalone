@@ -199,9 +199,9 @@ export default {
       const newData = [...this.users];
       const target = newData.filter(item => key === item.username)[0];
       if (target) {
-        target.editable = true
-        this.users = newData
-        this.newUserCol = target
+        target.editable = true;
+        this.users = newData;
+        this.newUserCol = target;
       }
     },
 
