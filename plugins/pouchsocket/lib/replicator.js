@@ -56,7 +56,7 @@ export async function commit2Store ({ store }) {
         remoteCount = `remote: ${count.remoteDocCount.doc_count}`;
       };
 
-      console.log(` ######## [ Initial Fetch ] ########  Commit Data from "${db}" into Vuex Store: ${localCount} / ${remoteCount}`);
+      console.log(` ######## [ Initial Fetch ] ########  Fetched "${db}": ${localCount} / ${remoteCount}`);
     };
   };
   store.commit('fetchReadyAll');
